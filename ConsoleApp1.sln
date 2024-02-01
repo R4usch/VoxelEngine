@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame", "ConsoleApp1\MyGame.csproj", "{35DBA5F6-68E9-40C1-90CF-62547528A686}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelEngine", "VoxelEngine\VoxelEngine.csproj", "{F4A63C7F-C9D8-43D7-8E63-3CF35319AE72}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35DBA5F6-68E9-40C1-90CF-62547528A686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35DBA5F6-68E9-40C1-90CF-62547528A686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35DBA5F6-68E9-40C1-90CF-62547528A686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35DBA5F6-68E9-40C1-90CF-62547528A686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4A63C7F-C9D8-43D7-8E63-3CF35319AE72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4A63C7F-C9D8-43D7-8E63-3CF35319AE72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4A63C7F-C9D8-43D7-8E63-3CF35319AE72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4A63C7F-C9D8-43D7-8E63-3CF35319AE72}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14EB3C6B-9587-47CB-8250-6F0AB1412429}
+	EndGlobalSection
+EndGlobal

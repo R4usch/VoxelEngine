@@ -1,0 +1,6 @@
+C:\Users\Rausch\source\repos\ConsoleApp1\VoxelEngine\bin\Debug\VoxelEngine.dll
+C:\Users\Rausch\source\repos\ConsoleApp1\VoxelEngine\bin\Debug\VoxelEngine.pdb
+C:\Users\Rausch\source\repos\ConsoleApp1\VoxelEngine\obj\Debug\VoxelEngine.csproj.AssemblyReference.cache
+C:\Users\Rausch\source\repos\ConsoleApp1\VoxelEngine\obj\Debug\VoxelEngine.csproj.CoreCompileInputs.cache
+C:\Users\Rausch\source\repos\ConsoleApp1\VoxelEngine\obj\Debug\VoxelEngine.dll
+C:\Users\Rausch\source\repos\ConsoleApp1\VoxelEngine\obj\Debug\VoxelEngine.pdb

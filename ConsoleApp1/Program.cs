@@ -17,9 +17,9 @@ class Program
 
         float[] vertices =
         [
-            0.5f, 0.5f, 0f,     // Triangle 1
+            0.5f, 0.5f, 0f,     // Front face begin
             0.5f, -0.5f, 0f,
-            -0.5f, -0.5f, 0.0f, // Triangle 1
+            -0.5f, -0.5f, 0.0f, // Front face end
 
             -0.5f, 0.5f, 0.0f,  // Triangle 2
             0.5f, 0.5f, 0.0f,
@@ -28,7 +28,7 @@ class Program
 
         var gameWindow = new GameWindow(new GameWindowSettings(), new NativeWindowSettings
         {
-            Size = new Vector2i(800, 600),
+            Size = new Vector2i(800, 800),
             Title = "OpenGL in C# with OpenTK"
         });
 

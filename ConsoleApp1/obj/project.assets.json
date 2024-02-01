@@ -434,11 +434,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Rausch\\source\\repos\\ConsoleApp1\\ConsoleApp1\\MyGame.csproj",
+      "projectUniqueName": "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\ConsoleApp1\\MyGame.csproj",
       "projectName": "MyGame",
-      "projectPath": "C:\\Users\\Rausch\\source\\repos\\ConsoleApp1\\ConsoleApp1\\MyGame.csproj",
+      "projectPath": "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\ConsoleApp1\\MyGame.csproj",
       "packagesPath": "C:\\Users\\Rausch\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Rausch\\source\\repos\\ConsoleApp1\\ConsoleApp1\\obj\\",
+      "outputPath": "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\ConsoleApp1\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Rausch\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -455,8 +455,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Rausch\\source\\repos\\ConsoleApp1\\VoxelEngine\\VoxelEngine.csproj": {
-              "projectPath": "C:\\Users\\Rausch\\source\\repos\\ConsoleApp1\\VoxelEngine\\VoxelEngine.csproj"
+            "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\VoxelEngine.csproj": {
+              "projectPath": "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\VoxelEngine.csproj"
             }
           }
         }

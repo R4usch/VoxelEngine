@@ -9,3 +9,5 @@ VoxelEngine/Debug
 
 .vs/
 .vscode/
+
+.fake

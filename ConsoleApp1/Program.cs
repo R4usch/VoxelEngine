@@ -12,6 +12,8 @@ class Program
 {
     static int VAO; // VERTEX ARRAY OBJECT
     static int VBO; // VERTEX BUFFER OBJECT
+
+    [Obsolete]
     static void Main(string[] args)
     {
 

@@ -40,14 +40,14 @@ class Program
         ];
 
         float[] colors =
-        [
-            0.583f,  0.771f,  0.014f,
-            0.583f,  0.771f,  0.014f,
-            0.583f,  0.771f,  0.014f,
-            0.583f,  0.771f,  0.014f,
-            0.583f,  0.771f,  0.014f,
-            0.583f,  0.771f,  0.014f,
-        ];
+    [
+        0.583f,  0.771f,  0.014f,  // Cor 1 (amarelo)
+        0.224f,  0.458f,  0.686f,  // Cor 2 (azul)
+        0.820f,  0.145f,  0.342f,  // Cor 3 (vermelho)
+        0.471f,  0.686f,  0.145f,  // Cor 4 (verde)
+        0.902f,  0.502f,  0.082f,  // Cor 5 (laranja)
+        0.310f,  0.102f,  0.749f   // Cor 6 (roxo)
+    ];
 
         float[] vertices = quad;
 

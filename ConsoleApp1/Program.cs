@@ -8,12 +8,93 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 
 
+public class Shader
+{
+    int Handle;
+
+    public Shader(string vertexPath, string fragmentPath)
+    {
+        string VertexShaderSource = File.ReadAllText(vertexPath);
+
+        string FragmentShaderSource = File.ReadAllText(fragmentPath);
+
+        int VertexShader = GL.CreateShader(ShaderType.VertexShader);
+        GL.ShaderSource(VertexShader, VertexShaderSource);
+
+        int FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+        GL.ShaderSource(FragmentShader, FragmentShaderSource);
+
+        GL.CompileShader(VertexShader);
+
+        GL.GetShader(VertexShader, ShaderParameter.CompileStatus, out int success);
+        if (success == 0)
+        {
+            string infoLog = GL.GetShaderInfoLog(VertexShader);
+            Console.WriteLine(infoLog);
+        }
+
+        GL.CompileShader(FragmentShader);
+
+        GL.GetShader(FragmentShader, ShaderParameter.CompileStatus, out int success2);
+        if (success2 == 0)
+        {
+            string infoLog = GL.GetShaderInfoLog(FragmentShader);
+            Console.WriteLine(infoLog);
+        }
+
+        Handle = GL.CreateProgram();
+
+        GL.AttachShader(Handle, VertexShader);
+        GL.AttachShader(Handle, FragmentShader);
+
+        GL.LinkProgram(Handle);
+
+        GL.GetProgram(Handle, GetProgramParameterName.LinkStatus, out int success3);
+        if (success3 == 0)
+        {
+            string infoLog = GL.GetProgramInfoLog(Handle);
+            Console.WriteLine(infoLog);
+        }
+    }
+    public void Use()
+    {
+        GL.UseProgram(Handle);
+    }
+    private bool disposedValue = false;
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            GL.DeleteProgram(Handle);
+
+            disposedValue = true;
+        }
+    }
+
+    ~Shader()
+    {
+        if (disposedValue == false)
+        {
+            Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");
+        }
+    }
+
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+}
 class Program
 {
     static int VAO; // VERTEX ARRAY OBJECT
     static int VBO; // VERTEX BUFFER OBJECT
 
     static int CBO; // COLOR BUFFER OBJECT
+
+    static Shader shader;
 
     static void Main(string[] args)
     {
@@ -39,19 +120,7 @@ class Program
             -0.5f,-0.5f,0.0f    // Front Face End 
         ];
 
-        float[] colors =
-    [
-        0.583f,  0.771f,  0.014f,  // Cor 1 (amarelo)
-        0.224f,  0.458f,  0.686f,  // Cor 2 (azul)
-        0.820f,  0.145f,  0.342f,  // Cor 3 (vermelho)
-        0.471f,  0.686f,  0.145f,  // Cor 4 (verde)
-        0.902f,  0.502f,  0.082f,  // Cor 5 (laranja)
-        0.310f,  0.102f,  0.749f   // Cor 6 (roxo)
-    ];
-
         float[] vertices = quad;
-
-
 
         var gameWindow = new GameWindow(new GameWindowSettings(), new NativeWindowSettings
         {
@@ -69,6 +138,13 @@ class Program
 
         gameWindow.Load += () =>
         {
+            // Carregar shaders
+
+            shader = new Shader("C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\vertex.glsl",
+                "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\fragment.glsl");
+
+
+            // Defaults
             GL.Enable(EnableCap.DepthTest);
             GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f); // Cor de fundo
 
@@ -81,22 +157,14 @@ class Program
             // Bind VBO (VERTEX BUFFER OBJECT)
             VBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+
+            // Copia os dados da vertex para o buffer de memoria
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices.ToArray(), BufferUsageHint.StaticDraw);
 
-            // Color Buffer
-            //CBO = GL.GenBuffer();
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, CBO);
-            //GL.VertexAttribPointer(
-            //    1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-            //    3,                                // size
-            //    VertexAttribPointerType.Float,    // type
-            //    false,                            // normalized?
-            //    0,                                // stride
-            //    0                                 // array buffer offset
-            //);
-
             GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, 0, 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+
+            shader.Use();
         };
 
         gameWindow.Resize += (sender) =>
@@ -105,11 +173,11 @@ class Program
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
+
+            // Perspectiva de camera
             // Campo de visão ( FOV / FIELD OF VIEW )
             float fieldOfView = 2.0f;
-            Console.WriteLine(sender.Width);
 
-            Console.WriteLine(sender.Height);
             // Aspect ratio eu acho
             float aspectRatio = sender.Width / sender.Height;
 
@@ -121,7 +189,7 @@ class Program
 
             Matrix4 matrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, depthNear, depthFar);
             GL.LoadMatrix(ref matrix);
-            //GL.Frustum()
+            
         };
 
         gameWindow.RenderFrame += (sender) =>

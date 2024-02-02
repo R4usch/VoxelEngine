@@ -140,8 +140,8 @@ class Program
         {
             // Carregar shaders
 
-            shader = new Shader("C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\vertex.glsl",
-                "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\fragment.glsl");
+            shader = new Shader("..\\VoxelEngine\\Shaders\\vertex.glsl",
+                "..\\VoxelEngine\\Shaders\\fragment.glsl");
 
 
             // Defaults

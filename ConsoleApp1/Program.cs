@@ -102,23 +102,24 @@ class Program
     {
         float[] quad =  
         [
-            0.5f, 0.5f, 0f,     // Triangle 1 Begin
-            0.5f, -0.5f, 0f,
-            -0.5f, -0.5f, 0f,   // Triangle 1 End
+            //// Posição          //Cores       
+             0.5f,  0.5f, 0f,   1.0f, 0.0f, 0.0f,  // Topo  direita  // Triangle 1 Begin
+             0.5f, -0.5f, 0f,   0.0f, 1.0f, 0.0f,  // Baixo direita
+            -0.5f, -0.5f, 0f,   0.0f, 0.0f, 1.0f,  // Baixo esquerda // Triangle 1 End
 
-            -0.5f, 0.5f, 0.0f,  // Triangle 2 Begin
-            0.5f, 0.5f, 0.0f,
-            -0.5f,-0.5f,0.0f    // Triangle 2 End
+            -0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // Topo esquerda  // Triangle 2 Begin
+             0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // Topo direita
+            -0.5f,-0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // Baixo esquerda // Triangle 2 End
         ];
 
         float[] cube =
         [
-            0.5f, 0.5f, 0f,     // Front Face Begin
-            0.5f, -0.5f, 0f,
+             0.5f,  0.5f, 0f,     // Front Face Begin
+             0.5f, -0.5f, 0f,
             -0.5f, -0.5f, 0f,   
-            -0.5f, 0.5f, 0.0f,  
-            0.5f, 0.5f, 0.0f,
-            -0.5f,-0.5f,0.0f    // Front Face End 
+            -0.5f,  0.5f, 0.0f,  
+             0.5f,  0.5f, 0.0f,
+            -0.5f,- 0.5f, 0.0f    // Front Face End 
         ];
 
         float[] vertices = quad;
@@ -165,8 +166,13 @@ class Program
             // Copia os dados da vertex para o buffer de memoria
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices.ToArray(), BufferUsageHint.StaticDraw);
 
+            // Habilita os atributos de posição vertex na localização 0  // Stride é quantas casas vai ter que se mover para achar o próximo valor da proxima vertex
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+
+            // Habilita os atributos de cor na vertex na localição 1  // Offset é para onde ele começará a ler. Como a posição fica de 0 a 3, ele começará do 3
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
 
             // Habilita o uso de shaders
             shader.Use();
@@ -212,10 +218,6 @@ class Program
 
             // Renderiza a partir daqui
 
-            double timeValue = timer.Elapsed.TotalSeconds; // Retorna a quantidade de tempo desde o começo do projeto
-            float greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f; // Retorna a cor de verde, indo desde 0 a 1
-            int vertexColorLocation = GL.GetUniformLocation(shader.Handle, "ourColor"); // Acessa o id da "ourColor" do nosso shader em fragment.glsl
-            GL.Uniform4(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f); // Passa um Vetor de 4 valores para "ourColor"
 
             // 0 = Onde vai começar a ler as vertices
             // 3 = E a quantidade de vertices

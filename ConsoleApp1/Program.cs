@@ -6,11 +6,12 @@ using OpenTK.Windowing.Common;
 using VoxelEngine.Core;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
+using System.Diagnostics;
 
 
 public class Shader
 {
-    int Handle;
+    public int Handle;
 
     public Shader(string vertexPath, string fragmentPath)
     {
@@ -96,9 +97,9 @@ class Program
 
     static Shader shader;
 
+    static Stopwatch timer; // Objeto stopwatch. Faz a contagem de tempo desde a inicialização do projeto
     static void Main(string[] args)
     {
-
         float[] quad =  
         [
             0.5f, 0.5f, 0f,     // Triangle 1 Begin
@@ -122,6 +123,9 @@ class Program
 
         float[] vertices = quad;
 
+        timer = new Stopwatch(); // Cria uma nova classe do StopWatch
+        timer.Start(); // Inicia o stopwatch
+
         var gameWindow = new GameWindow(new GameWindowSettings(), new NativeWindowSettings
         {
             Size = new Vector2i(600, 600),
@@ -140,8 +144,8 @@ class Program
         {
             // Carregar shaders
 
-            shader = new Shader("..\\VoxelEngine\\Shaders\\vertex.glsl",
-                "..\\VoxelEngine\\Shaders\\fragment.glsl");
+            shader = new Shader("C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\vertex.glsl",
+                "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\fragment.glsl");
 
 
             // Defaults
@@ -164,7 +168,10 @@ class Program
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
 
+            // Habilita o uso de shaders
             shader.Use();
+
+            // 
         };
 
         gameWindow.Resize += (sender) =>
@@ -195,25 +202,29 @@ class Program
         gameWindow.RenderFrame += (sender) =>
         {
             // Processa eventos e entradas
-            if (gameWindow.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.V)) 
+            if (gameWindow.IsKeyDown(Keys.V)) 
             {
                 gameWindow.Close();
             };
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa a tela
 
-            GL.BindVertexArray(VAO);
-            // Preparo do viewport
 
             // Renderiza a partir daqui
 
+            double timeValue = timer.Elapsed.TotalSeconds; // Retorna a quantidade de tempo desde o começo do projeto
+            float greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f; // Retorna a cor de verde, indo desde 0 a 1
+            int vertexColorLocation = GL.GetUniformLocation(shader.Handle, "ourColor"); // Acessa o id da "ourColor" do nosso shader em fragment.glsl
+            GL.Uniform4(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f); // Passa um Vetor de 4 valores para "ourColor"
 
             // 0 = Onde vai começar a ler as vertices
             // 3 = E a quantidade de vertices
-            
-            GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / 3);  // 2 triangles * 3 vertices
-            
 
+            GL.BindVertexArray(VAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / 3); // Pega o total de vertices e divide por 3,
+                                                                            // resultando na quantidade de triangulos desenhados
+
+            // Troca o frame no back-end para o front-end
             gameWindow.SwapBuffers();
         };
 

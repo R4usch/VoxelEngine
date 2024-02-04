@@ -102,7 +102,7 @@ class Program
     {
         float[] quad =  
         [
-            //// Posição          //Cores       
+            // Posição          //Cores       
              0.5f,  0.5f, 0f,   1.0f, 0.0f, 0.0f,  // Topo  direita  // Triangle 1 Begin
              0.5f, -0.5f, 0f,   0.0f, 1.0f, 0.0f,  // Baixo direita
             -0.5f, -0.5f, 0f,   0.0f, 0.0f, 1.0f,  // Baixo esquerda // Triangle 1 End
@@ -110,16 +110,6 @@ class Program
             -0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // Topo esquerda  // Triangle 2 Begin
              0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // Topo direita
             -0.5f,-0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // Baixo esquerda // Triangle 2 End
-        ];
-
-        float[] cube =
-        [
-             0.5f,  0.5f, 0f,     // Front Face Begin
-             0.5f, -0.5f, 0f,
-            -0.5f, -0.5f, 0f,   
-            -0.5f,  0.5f, 0.0f,  
-             0.5f,  0.5f, 0.0f,
-            -0.5f,- 0.5f, 0.0f    // Front Face End 
         ];
 
         float[] vertices = quad;
@@ -145,8 +135,8 @@ class Program
         {
             // Carregar shaders
 
-            shader = new Shader("C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\vertex.glsl",
-                "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\VoxelEngine\\Shaders\\fragment.glsl");
+            shader = new Shader("..\\..\\..\\..\\VoxelEngine\\Shaders\\vertex.glsl",
+                "..\\..\\..\\..\\VoxelEngine\\Shaders\\fragment.glsl");
 
 
             // Defaults
@@ -213,8 +203,7 @@ class Program
                 gameWindow.Close();
             };
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa a tela
-
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa as cores da tela e o buffer de profundidade
 
             // Renderiza a partir daqui
 

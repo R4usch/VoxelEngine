@@ -1,12 +1,8 @@
 ﻿using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK.Windowing.Common;
+using VoxelEngine.Scene;
 
 namespace VoxelEngine.Core
 {
@@ -22,6 +18,8 @@ namespace VoxelEngine.Core
 
         ShaderSettings shaderSettings;
         Shader shader;
+
+        new protected Action<FrameEventArgs> RenderFrame;
 
         public Window(int width, int height, string title, ShaderSettings _shaderSettings, float[] _vertices) : base (GameWindowSettings.Default, new NativeWindowSettings
         {
@@ -75,7 +73,14 @@ namespace VoxelEngine.Core
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
-        }
+
+            List<Scene.GameObject> gameObjects = Scene.Scene.getCurrentScene().GetGameObjects();
+
+            foreach(GameObject obj in gameObjects)
+            {
+                obj.Update((float)args.Time);
+            }
+        }   
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
@@ -83,14 +88,23 @@ namespace VoxelEngine.Core
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa o buffer de cores e profundidade
 
+            // Carregar cada GameObject
 
 
-            SwapBuffers();
+            
+            
+            // Troca o buffer do front-end pelo back-end
+            base.SwapBuffers();
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
+        }
+
+        public override void Close()
+        {
+            base.Close();
         }
     }
 }

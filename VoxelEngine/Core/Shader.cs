@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Compute.OpenCL;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VoxelEngine.Core
 {
@@ -15,6 +17,9 @@ namespace VoxelEngine.Core
 
         int VertexShader;
         int FragmentShader;
+
+        Dictionary<string, int> _uniformLocations;
+
         internal Shader(ShaderSettings settings)
         {
             VertexShader = GL.CreateShader(ShaderType.VertexShader);
@@ -24,6 +29,7 @@ namespace VoxelEngine.Core
             GL.ShaderSource(FragmentShader, settings.fragment);
 
             CompileShader();
+
         }
 
         internal void CompileShader()
@@ -65,6 +71,23 @@ namespace VoxelEngine.Core
             GL.DetachShader(Handle, FragmentShader);
             GL.DeleteShader(VertexShader);
             GL.DeleteShader(FragmentShader);
+
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+
+            _uniformLocations = new Dictionary<string, int>();
+
+            // Loop over all the uniforms,
+            for (var i = 0; i < numberOfUniforms; i++)
+            {
+                // get the name of this uniform,
+                var key = GL.GetActiveUniform(Handle, i, out _, out _);
+
+                // get the location,
+                var location = GL.GetUniformLocation(Handle, key);
+
+                // and then add it to the dictionary.
+                _uniformLocations.Add(key, location);
+            }
         }
 
         internal void LinkProgram()
@@ -83,6 +106,13 @@ namespace VoxelEngine.Core
                 // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
                 throw new Exception($"Error occurred whilst linking Program({Handle})");
             }
+        }
+
+        internal void SetMatrix4(string name, Matrix4 matrix)
+        {
+
+            GL.UseProgram(Handle);
+            GL.UniformMatrix4(_uniformLocations[name], true, ref matrix);
         }
     }
 

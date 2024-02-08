@@ -11,6 +11,8 @@ using System.Reflection.Metadata;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using VoxelEngine.Core;
+using VoxelEngine.Scenes;
+using MyGame.Scenes;
 
 public class Shader
 {
@@ -408,7 +410,19 @@ class Program
 
         VoxelEngine.Core.Window window = new VoxelEngine.Core.Window(800, 800, "Voxel Engine!", shaderSettings, Program2.quad);
 
-        
+        Scene _scene = new World();
 
+        Scene.loadScene(_scene);
+
+        //VoxelEngine.Components.Voxel voxel = new VoxelEngine.Components.Voxel(VoxelEngine.Components.VoxelConstants.VOXEL_CUBE_VERTICES);
+        //voxel.Position = new Vector3(1, 0, 0);
+
+        //VoxelEngine.Components.Voxel voxel2 = new VoxelEngine.Components.Voxel(VoxelEngine.Components.VoxelConstants.VOXEL_CUBE_VERTICES);
+        //voxel2.Position = new Vector3(0,0,0);
+
+
+        //Console.WriteLine(VoxelEngine.Scene.Scene.getCurrentScene().GetVoxels().Count);
+
+        window.Run();
     }
 }

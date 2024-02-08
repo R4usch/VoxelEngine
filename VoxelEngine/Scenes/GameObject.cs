@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VoxelEngine.Scene
+namespace VoxelEngine.Scenes
 {
     public class GameObject
     {
         public GameObject() 
         {
-            Scene.getCurrentScene().gameObjectManager.Push(this);
+            Scene.getCurrentScene().objectManager.PushGameObject(this);
 
         }
 

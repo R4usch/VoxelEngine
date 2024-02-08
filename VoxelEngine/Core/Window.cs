@@ -2,7 +2,8 @@
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using VoxelEngine.Scene;
+using VoxelEngine.Scenes;
+using System.Reflection;
 
 namespace VoxelEngine.Core
 {
@@ -10,16 +11,16 @@ namespace VoxelEngine.Core
 
     public class Window : GameWindow
     {
-        
+        public static Window game;
         int VAO; // Vertex Array Object
         int VBO; // Vertex Buffer Object
 
         float[] vertices;
 
         ShaderSettings shaderSettings;
-        Shader shader;
+        internal static Shader shader;
 
-        new protected Action<FrameEventArgs> RenderFrame;
+        int frameCount = 0;
 
         public Window(int width, int height, string title, ShaderSettings _shaderSettings, float[] _vertices) : base (GameWindowSettings.Default, new NativeWindowSettings
         {
@@ -29,7 +30,7 @@ namespace VoxelEngine.Core
         {
             vertices = _vertices;
             shaderSettings = _shaderSettings;
-            base.Run();
+            game = this;
         }
 
         protected override void OnLoad()
@@ -40,31 +41,16 @@ namespace VoxelEngine.Core
             shader = new Shader(shaderSettings);
             shader.Use();
 
-            
+            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), 800 / 800, 0.1f, 100.0f);
+            shader.SetMatrix4("projection", projection);
+
+            Matrix4 view = Matrix4.LookAt(new Vector3(0.0f, 0.0f, 3.0f),
+                 new Vector3(0.0f, 0.0f, 0.0f),
+                 new Vector3(0.0f, 1.0f, 0.0f));
+            shader.SetMatrix4("view", view);
+
             GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f); // Cor de limpeza da tela
             GL.Enable(EnableCap.DepthTest); // Habilita profundida na tela
-
-            // VAO = Local onde é armazenado os ids das vertices
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
-
-            // VBO = Local na memoria onde sera armazenado as vertices
-            // Bind VBO (VERTEX BUFFER OBJECT)
-            VBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-
-            // Copia os dados da vertex para o buffer de memoria
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices.ToArray(), BufferUsageHint.StaticDraw);
-
-            // Habilita os atributos de posição vertex na localização 0  // Stride é quantas casas vai ter que se mover para achar o próximo valor da proxima vertex
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            // Habilita os atributos de cor na vertex na localização 1  // Offset é para onde ele começará a ler. Como a posição fica de 0 a 3, ele começará do 3
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-
 
             
             
@@ -73,8 +59,12 @@ namespace VoxelEngine.Core
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
+            if (Scenes.Scene.getCurrentScene() == null) return;
 
-            List<Scene.GameObject> gameObjects = Scene.Scene.getCurrentScene().GetGameObjects();
+            List<Scenes.GameObject> gameObjects = Scenes.Scene.getCurrentScene().GetGameObjects();
+
+            
+            Scenes.Scene.getCurrentScene().Update(args.Time);
 
             foreach(GameObject obj in gameObjects)
             {
@@ -85,11 +75,40 @@ namespace VoxelEngine.Core
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
+            frameCount++;
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa o buffer de cores e profundidade
 
-            // Carregar cada GameObject
+            if (Scenes.Scene.getCurrentScene() == null)
+            {
+                base.SwapBuffers();
+                    return;
+            };
 
+
+            // View e Projeção
+
+            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), 800 / 800, 0.1f, 100.0f);
+            shader.SetMatrix4("projection", projection);
+
+            Matrix4 view = Matrix4.LookAt(new Vector3(0.0f, 0.0f, 3.0f),
+                 new Vector3(0.0f, 0.0f, 0.0f),
+                 new Vector3(0.0f, 1.0f, 0.0f));
+            shader.SetMatrix4("view", view);
+
+
+            // Renderização de Voxels
+            List<Components.Voxel> voxels = Scenes.Scene.getCurrentScene().GetVoxels();
+
+            foreach(Components.Voxel obj in voxels)
+            {
+                obj.Render(args.Time);
+            }
+
+            // Renderização de GameObjects
+
+
+            
 
             
             
@@ -100,6 +119,14 @@ namespace VoxelEngine.Core
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
+            GL.Viewport(0, 0, e.Width, e.Height);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+        }
+        
+        public override void Run()
+        {
+            base.Run();
         }
 
         public override void Close()

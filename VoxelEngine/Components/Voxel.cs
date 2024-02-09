@@ -17,71 +17,78 @@ namespace VoxelEngine.Components
     {
         int VAO; // Vertex Array Object
         int VBO; // Vertex Buffer Object
-        float[] vertices;
+        int EBO; // Elements Buffer Object
+        float[] vertices = VoxelConstants.GetVoxelColored(1f, 1f, 1f);
+        uint[]  indices = VoxelConstants.VOXEL_CUBE_INDICES;
 
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
-        public Vector3 Scale { get; set; }
+        public Vector3 Scale = new Vector3(1, 1, 1);
 
-        Stopwatch timer;
 
-        public Voxel(float[] _vertices) : this(_vertices, Scenes.Scene.getCurrentScene())
+        public Voxel() : this(Scenes.Scene.getCurrentScene())
         {
-  
+            
         }
 
-        public Voxel(float[] _vertices, Scenes.Scene _scene) 
+        public Voxel(Scenes.Scene _scene) 
         {
-            timer = new Stopwatch(); // Cria uma nova classe do StopWatch
-            timer.Start(); // Inicia o stopwatch
+            _scene.objectManager.PushVoxel(this);
+            Console.WriteLine("Voxel Created!");
 
-            vertices = _vertices;
-
-            // VAO = Local onde é armazenado os ids das vertices
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
 
             // VBO = Local na memoria onde sera armazenado as vertices
             // Bind VBO (VERTEX BUFFER OBJECT)
             VBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-
             // Copia os dados da vertex para o buffer de memoria
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices.ToArray(), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+
+            // VAO = Local onde é armazenado os ids das vertices
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
 
             // Habilita os atributos de posição vertex na localização 0  // Stride é quantas casas vai ter que se mover para achar o próximo valor da proxima vertex
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-
-            // Habilita os atributos de cor na vertex na localização 1  // Offset é para onde ele começará a ler. Como a posição fica de 0 a 3, ele começará do 3
+            //Cores. Atualmente desabilitado
+            //Habilita os atributos de cor na vertex na localização 1  // Offset é para onde ele começará a ler. Como a posição fica de 0 a 3, ele começará do 3
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
 
-            _scene.objectManager.PushVoxel(this);
+            EBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+
+
+
         }
 
-        public void Translate()
-        {
 
-        }
 
         internal Matrix4 GetModelMatrix()
         {
+
+
             Matrix4 model = Matrix4.CreateTranslation(Position)
+                            * Matrix4.CreateScale(Scale)
                             * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(Rotation.X))
                             * Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(Rotation.Y))
                             * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(Rotation.Z));
+                            
             return model;
+            
 
         }
 
-        public void Render(double deltaTime)
+        internal void Render(double deltaTime)
         {
+            GL.BindVertexArray(VBO);
 
             Window.shader.SetMatrix4("model", GetModelMatrix());
 
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / 3);
+            GL.DrawElements(PrimitiveType.Triangles, VoxelConstants.VOXEL_CUBE_INDICES.Length, DrawElementsType.UnsignedInt, 0);
         }
     }
 }

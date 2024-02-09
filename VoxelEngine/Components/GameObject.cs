@@ -1,14 +1,19 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VoxelEngine.Scenes;
 
-namespace VoxelEngine.Scenes
+namespace VoxelEngine.Components
 {
-    public class GameObject
+    public abstract class GameObject
     {
-        public GameObject() 
+        public Vector3 Position { get; set; }
+        public Vector3 Rotation { get; set; }
+        public Vector3 Scale { get; set; }
+        public GameObject()
         {
             Scene.getCurrentScene().objectManager.PushGameObject(this);
 
@@ -23,6 +28,8 @@ namespace VoxelEngine.Scenes
         {
 
         }
+        
+        
 
     }
 }

@@ -104,6 +104,8 @@ namespace VoxelEngine.Core
             if (code != (int)All.True)
             {
                 // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
+                string log = GL.GetProgramInfoLog(Handle);
+                Console.WriteLine(log);
                 throw new Exception($"Error occurred whilst linking Program({Handle})");
             }
         }
@@ -112,6 +114,8 @@ namespace VoxelEngine.Core
         {
 
             GL.UseProgram(Handle);
+
+            if (!_uniformLocations.ContainsKey(name)) return;
             GL.UniformMatrix4(_uniformLocations[name], true, ref matrix);
         }
     }

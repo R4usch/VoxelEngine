@@ -9,27 +9,28 @@ namespace MyGame.Scenes
 {
     public class World : VoxelEngine.Scenes.Scene
     {
+        List<VoxelEngine.Components.Voxel> voxels = new List<VoxelEngine.Components.Voxel>();
+        
 
         public override void onLoad()
         {
             base.onLoad();
 
-            VoxelEngine.Components.Voxel voxel = new VoxelEngine.Components.Voxel(VoxelEngine.Components.VoxelConstants.VOXEL_CUBE_VERTICES, this);
-            voxel.Position = new Vector3(-1, 0, 0);
+            VoxelEngine.Components.Voxel voxel = new VoxelEngine.Components.Voxel(this);
 
-            VoxelEngine.Components.Voxel voxel2 = new VoxelEngine.Components.Voxel(VoxelEngine.Components.VoxelConstants.VOXEL_CUBE_VERTICES, this);
-            voxel2.Position = new Vector3(0, 0, 0);
+            voxels.Add(voxel);
         }
 
         public override void Update(double deltaTime)
         {
             base.Update(deltaTime);
 
-            if(VoxelEngine.Core.Window.game.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.K)){
-                Hell hell = new Hell();
-                
-            }
+            float angle = 40f * (float)deltaTime;
 
+            voxels[0].Rotation = new Vector3(voxels[0].Rotation.X + angle, voxels[0].Rotation.Y + angle , voxels[0].Rotation.Z + angle);
+
+            //voxels[0]._currentAngle = voxels[0]._currentAngle + 80f * (float)deltaTime;
+            //voxels[0]._currentAngle %= 360;
 
         }
     }

@@ -16,9 +16,25 @@ namespace MyGame.Scenes
         {
             base.onLoad();
 
-            VoxelEngine.Components.Voxel voxel = new VoxelEngine.Components.Voxel(this);
 
-            voxels.Add(voxel);
+
+            int _voxels = 80;
+
+            for (int i = 0; i < _voxels; i++)
+            {
+
+                VoxelEngine.Components.Voxel voxel = new VoxelEngine.Components.Voxel(this, new Color4(VoxelEngine.Utils.Math.NextFloat(0, 1), 
+                                                                                                        VoxelEngine.Utils.Math.NextFloat(0, 1),
+                                                                                                        VoxelEngine.Utils.Math.NextFloat(0, 1),
+                                                                                                        1));
+
+                float x = 0;
+
+                voxel.Position = new Vector3(x, -1, -(i));
+
+                voxels.Add(voxel);
+            }
+
         }
 
         public override void Update(double deltaTime)
@@ -27,8 +43,9 @@ namespace MyGame.Scenes
 
             float angle = 40f * (float)deltaTime;
 
-            voxels[0].Rotation = new Vector3(voxels[0].Rotation.X + angle, voxels[0].Rotation.Y + angle , voxels[0].Rotation.Z + angle);
+            //voxels[0].Rotation = new Vector3(voxels[0].Rotation.X + angle, voxels[0].Rotation.Y + angle , voxels[0].Rotation.Z + angle);
 
+            //voxels[0].Position = new Vector3(0, -1, 0);
             //voxels[0]._currentAngle = voxels[0]._currentAngle + 80f * (float)deltaTime;
             //voxels[0]._currentAngle %= 360;
 

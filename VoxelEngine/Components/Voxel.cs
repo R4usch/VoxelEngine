@@ -18,24 +18,26 @@ namespace VoxelEngine.Components
         int VAO; // Vertex Array Object
         int VBO; // Vertex Buffer Object
         int EBO; // Elements Buffer Object
-        float[] vertices = VoxelConstants.GetVoxelColored(1f, 1f, 1f);
+        float[] vertices;
         uint[]  indices = VoxelConstants.VOXEL_CUBE_INDICES;
 
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
+
         public Vector3 Scale = new Vector3(1, 1, 1);
 
 
-        public Voxel() : this(Scenes.Scene.getCurrentScene())
-        {
-            
-        }
+        public Voxel() : this(Scenes.Scene.getCurrentScene(), new Color4(1,1,1,1)){}
 
-        public Voxel(Scenes.Scene _scene) 
+        public Voxel(Color4 color) : this(Scenes.Scene.getCurrentScene(), color){}
+
+        public Voxel(Scenes.Scene _scene) : this(_scene, new Color4(1, 1, 1, 1)){}
+
+        public Voxel(Scenes.Scene _scene, Color4 color) 
         {
             _scene.objectManager.PushVoxel(this);
-            Console.WriteLine("Voxel Created!");
 
+            vertices = VoxelConstants.GetVoxelColored(color.R, color.G, color.B);
 
             // VBO = Local na memoria onde sera armazenado as vertices
             // Bind VBO (VERTEX BUFFER OBJECT)
@@ -51,6 +53,7 @@ namespace VoxelEngine.Components
             // Habilita os atributos de posição vertex na localização 0  // Stride é quantas casas vai ter que se mover para achar o próximo valor da proxima vertex
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
+
             //Cores. Atualmente desabilitado
             //Habilita os atributos de cor na vertex na localização 1  // Offset é para onde ele começará a ler. Como a posição fica de 0 a 3, ele começará do 3
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));

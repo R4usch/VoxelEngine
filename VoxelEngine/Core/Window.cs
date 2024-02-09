@@ -87,6 +87,8 @@ namespace VoxelEngine.Core
             // Renderização de Voxels
             List<Components.Voxel> voxels = Scenes.Scene.getCurrentScene().GetVoxels();
 
+            
+
             foreach(Components.Voxel obj in voxels)
             {
                 obj.Render(args.Time);
@@ -94,11 +96,11 @@ namespace VoxelEngine.Core
 
             // Renderização de GameObjects
 
+            shader.SetMatrix4("projection", projectionMatrix);
 
-            
 
-            
-            
+
+
             // Troca o buffer do front-end pelo back-end
             base.SwapBuffers();
         }
@@ -106,9 +108,14 @@ namespace VoxelEngine.Core
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            GL.Viewport(0, 0, e.Width, e.Height);
+
+            GL.Viewport(0, 0, Size.X, Size.Y);
+
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
+            
+            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), (float)e.Width / e.Height, 0.1f, 100f);
+
         }
         
         public override void Run()

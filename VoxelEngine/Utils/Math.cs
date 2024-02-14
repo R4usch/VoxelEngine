@@ -8,12 +8,20 @@ namespace VoxelEngine.Utils
 {
     public class Math
     {
-
-        public static float NextFloat(float min, float max)
+        public static class Random 
         {
-            System.Random random = new System.Random();
-            double val = (random.NextDouble() * (max - min) + min);
-            return (float)val;
+            //public static float PerlinNoise(float x, float y)
+            //{
+
+            //}
+            public static float NextFloat(float min, float max)
+            {
+                System.Random random = new System.Random();
+                double val = (random.NextDouble() * (max - min) + min);
+                return (float)val;
+            }
+        
         }
+
     }
 }

@@ -4,7 +4,7 @@ using MyGame.Scenes;
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
 
         ShaderSettings shaderSettings = new ShaderSettings(File.ReadAllText("Shaders\\vertex.glsl"),
@@ -12,10 +12,11 @@ class Program
 
         VoxelEngine.Core.Window window = new VoxelEngine.Core.Window(800, 800, "Voxel Engine!", shaderSettings);
 
-        Scene _scene = new World();
+        World _scene = new World();
 
         Scene.loadScene(_scene);
 
         window.Run();
+
     }
 }

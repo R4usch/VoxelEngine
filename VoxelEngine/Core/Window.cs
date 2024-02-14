@@ -4,6 +4,8 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using System.Reflection;
 using VoxelEngine.Components;
+using ImGuiNET;
+using VoxelEngine.ImGUI;
 
 namespace VoxelEngine.Core
 {
@@ -13,9 +15,10 @@ namespace VoxelEngine.Core
     {
         public static Window game;
 
+        internal static Camera currentCamera;
 
-        ShaderSettings shaderSettings;
         internal static Shader shader;
+        ShaderSettings shaderSettings;
 
         int frameCount = 0;
 
@@ -23,13 +26,14 @@ namespace VoxelEngine.Core
         internal static Matrix4 viewMatrix;
         internal static Matrix4 projectionMatrix;
 
+        ImGUI.ImGUIController _imGUIcontroller;
+
         public Window(int width, int height, string title, ShaderSettings _shaderSettings) : base (GameWindowSettings.Default, new NativeWindowSettings
         {
             Size = new Vector2i(width, height),
             Title = title
         })
         {
-
             shaderSettings = _shaderSettings;
             game = this;
         }
@@ -42,19 +46,18 @@ namespace VoxelEngine.Core
             shader = new Shader(shaderSettings);
             shader.Use();
 
-            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), 800 / 800, 0.1f, 100.0f);
-            shader.SetMatrix4("projection", projectionMatrix);
+            if(currentCamera != null ) 
+            {
 
-            viewMatrix = Matrix4.LookAt(new Vector3(0.0f, 0.0f, 3.0f),
-                 new Vector3(0.0f, 0.0f, 0.0f),
-                 new Vector3(0.0f, 1.0f, 0.0f));
-            shader.SetMatrix4("view", viewMatrix);
+                viewMatrix = currentCamera.GetViewMatrix();
+                shader.SetMatrix4("view", viewMatrix);
+                
+            }
 
             GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f); // Cor de limpeza da tela
             GL.Enable(EnableCap.DepthTest); // Habilita profundida na tela
 
-            
-            
+            _imGUIcontroller = new ImGUI.ImGUIController(ClientSize.X, ClientSize.Y);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -62,11 +65,11 @@ namespace VoxelEngine.Core
             base.OnUpdateFrame(args);
             if (Scenes.Scene.getCurrentScene() == null) return;
 
-            List<GameObject> gameObjects = Scenes.Scene.getCurrentScene().GetGameObjects();
-
-            
+            // Atualiza a cena atual
             Scenes.Scene.getCurrentScene().Update(args.Time);
 
+            // Atualiza os objetos da cena atual
+            List<GameObject> gameObjects = Scenes.Scene.getCurrentScene().GetGameObjects();
             foreach(GameObject obj in gameObjects)
             {
                 obj.Update((float)args.Time);
@@ -83,12 +86,8 @@ namespace VoxelEngine.Core
             // Se não exister cena nenhuma, não renderize nada
             if (Scenes.Scene.getCurrentScene() == null){base.SwapBuffers();return;};
 
-
-            // Renderização de Voxels
+            // Renderiza os voxels da cena atual
             List<Components.Voxel> voxels = Scenes.Scene.getCurrentScene().GetVoxels();
-
-            
-
             foreach(Components.Voxel obj in voxels)
             {
                 obj.Render(args.Time);
@@ -96,10 +95,23 @@ namespace VoxelEngine.Core
 
             // Renderização de GameObjects
 
-            shader.SetMatrix4("projection", projectionMatrix);
+            // Atualiza a matriz de projeção com a projeção da camera
+            if(currentCamera != null) 
+            {
+                projectionMatrix = currentCamera.GetProjectionMatrix();
+                shader.SetMatrix4("projection", projectionMatrix);
 
 
+                viewMatrix = currentCamera.GetViewMatrix();
+                shader.SetMatrix4("view", viewMatrix);
+            }
 
+            Console.WriteLine("BAH");
+
+            ImGui.DockSpaceOverViewport();
+
+            ImGui.ShowDemoWindow();
+            _imGUIcontroller.Render();
 
             // Troca o buffer do front-end pelo back-end
             base.SwapBuffers();
@@ -113,8 +125,16 @@ namespace VoxelEngine.Core
 
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            
-            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), (float)e.Width / e.Height, 0.1f, 100f);
+
+            Console.WriteLine(Window.game.ClientRectangle.Size.X);
+
+            if(currentCamera != null)
+            {
+                projectionMatrix = currentCamera.GetProjectionMatrix();
+
+            }
+            //projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), (float)e.Width / e.Height, 0.1f, 100f);
+
 
         }
         

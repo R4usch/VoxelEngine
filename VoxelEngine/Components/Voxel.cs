@@ -86,11 +86,13 @@ namespace VoxelEngine.Components
 
         internal void Render(double deltaTime)
         {
+            // Adiciona as vertexs desse objeto para ser trabalhado
             GL.BindVertexArray(VBO);
+
 
             Window.shader.SetMatrix4("model", GetModelMatrix());
 
-
+            
             GL.DrawElements(PrimitiveType.Triangles, VoxelConstants.VOXEL_CUBE_INDICES.Length, DrawElementsType.UnsignedInt, 0);
         }
     }

@@ -10,7 +10,7 @@ class Program
         ShaderSettings shaderSettings = new ShaderSettings(File.ReadAllText("Shaders\\vertex.glsl"),
                 File.ReadAllText("Shaders\\fragment.glsl"));
 
-        VoxelEngine.Core.Window window = new VoxelEngine.Core.Window(800, 800, "Voxel Engine!", shaderSettings);
+        VoxelEngine.Core.Window window = new VoxelEngine.Core.Window(1600, 900, "Voxel Engine!", shaderSettings);
 
         World _scene = new World();
 

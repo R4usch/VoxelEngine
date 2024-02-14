@@ -1,9 +1,11 @@
-﻿using System;
+﻿using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VoxelEngine.Components;
+using VoxelEngine.Core;
 
 namespace VoxelEngine.Scenes
 {
@@ -18,6 +20,12 @@ namespace VoxelEngine.Scenes
         public static void loadScene(Scene _scene)
         {
             currentScene = _scene;
+            if (VoxelEngine.Core.Window.loaded) 
+            {
+                _scene.onLoad();
+            
+            }
+
         }
 
         internal class ObjectManager
@@ -90,7 +98,7 @@ namespace VoxelEngine.Scenes
 
         public Scene()
         {
-            this.onLoad();
+            //this.onLoad();
         }
 
         public virtual void onLoad() 
@@ -102,7 +110,10 @@ namespace VoxelEngine.Scenes
             
         }
         
-   
+        public virtual void Render(double deltaTime)
+        {
+
+        }
 
         
     }

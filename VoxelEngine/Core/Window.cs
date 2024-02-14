@@ -28,6 +28,8 @@ namespace VoxelEngine.Core
 
         ImGUI.ImGUIController _imGUIcontroller;
 
+        static internal bool loaded = false;
+
         public Window(int width, int height, string title, ShaderSettings _shaderSettings) : base (GameWindowSettings.Default, new NativeWindowSettings
         {
             Size = new Vector2i(width, height),
@@ -41,6 +43,10 @@ namespace VoxelEngine.Core
         protected override void OnLoad()
         {
             base.OnLoad();
+
+            _imGUIcontroller = new ImGUI.ImGUIController(ClientSize.X, ClientSize.Y);
+
+            Console.WriteLine("OpenGL Version : " + GL.GetString(StringName.Version));
 
             // Criar instancia de shader
             shader = new Shader(shaderSettings);
@@ -57,7 +63,14 @@ namespace VoxelEngine.Core
             GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f); // Cor de limpeza da tela
             GL.Enable(EnableCap.DepthTest); // Habilita profundida na tela
 
-            _imGUIcontroller = new ImGUI.ImGUIController(ClientSize.X, ClientSize.Y);
+            loaded = true;
+
+            // Carrega a cena
+            if(Scenes.Scene.getCurrentScene() != null)
+            {
+                Scenes.Scene.getCurrentScene().onLoad();
+            }
+
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -80,6 +93,8 @@ namespace VoxelEngine.Core
         {
             base.OnRenderFrame(args);
             frameCount++;
+            
+            _imGUIcontroller.Update(this, (float)args.Time);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa o buffer de cores e profundidade
 
@@ -93,7 +108,7 @@ namespace VoxelEngine.Core
                 obj.Render(args.Time);
             }
 
-            // Renderização de GameObjects
+            // TO DO : Renderização de GameObjects
 
             // Atualiza a matriz de projeção com a projeção da camera
             if(currentCamera != null) 
@@ -106,11 +121,8 @@ namespace VoxelEngine.Core
                 shader.SetMatrix4("view", viewMatrix);
             }
 
-            Console.WriteLine("BAH");
+            Scenes.Scene.getCurrentScene().Render(args.Time);
 
-            ImGui.DockSpaceOverViewport();
-
-            ImGui.ShowDemoWindow();
             _imGUIcontroller.Render();
 
             // Troca o buffer do front-end pelo back-end
@@ -121,7 +133,8 @@ namespace VoxelEngine.Core
         {
             base.OnResize(e);
 
-            GL.Viewport(0, 0, Size.X, Size.Y);
+            //Console.WriteLine(Size.X + " / " + )
+            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
@@ -133,9 +146,8 @@ namespace VoxelEngine.Core
                 projectionMatrix = currentCamera.GetProjectionMatrix();
 
             }
-            //projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), (float)e.Width / e.Height, 0.1f, 100f);
 
-
+            _imGUIcontroller.WindowResized(ClientSize.X, ClientSize.Y);
         }
         
         public override void Run()
@@ -146,6 +158,21 @@ namespace VoxelEngine.Core
         public override void Close()
         {
             base.Close();
+        }
+
+        protected override void OnTextInput(TextInputEventArgs e)
+        {
+            base.OnTextInput(e);
+
+
+            _imGUIcontroller.PressChar((char)e.Unicode);
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            _imGUIcontroller.MouseScroll(e.Offset);
         }
     }
 }

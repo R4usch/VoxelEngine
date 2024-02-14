@@ -1,13 +1,8 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using ImGuiNET;
 using VoxelEngine.Components;
+using OpenTK.Windowing.Common;
 
 namespace MyGame.Scenes
 {
@@ -38,14 +33,38 @@ namespace MyGame.Scenes
             _camera.ChangeCamera();
 
             //VoxelEngine.Core.Window.game.CursorState = CursorState.Grabbed;
+
+            
+        }
+
+        void LoadDebug()
+        {
+            //Console.WriteLine("LoadDebug");
+            ImGui.Begin("My First tool");
+            if (ImGui.Button("Opa"))
+            {
+                Console.WriteLine("Opa");
+            }
+            
+            ImGui.End();
+
+            //ImGui.ShowDemoWindow();
         }
 
         float speed = 5f;
         private Vector2 _lastPos;
         private bool _firstMove = true;
         private float sensitivy = 0.15f;
+
+        public override void Render(double deltaTime)
+        {
+            base.Render(deltaTime);
+            LoadDebug();
+        }
+
         public override void Update(double deltaTime)
         {
+            //LoadDebug();
             base.Update(deltaTime);
 
             if (VoxelEngine.Core.Window.game.IsKeyDown(Keys.K))
@@ -81,13 +100,17 @@ namespace MyGame.Scenes
                 _firstMove = false;
             }
             else
-            {
-                var deltaX = mouse.X - _lastPos.X;
-                var deltaY = mouse.Y - _lastPos.Y;
-                _lastPos = new Vector2(mouse.X, mouse.Y);
+            { 
+                if(VoxelEngine.Core.Window.game.CursorState == OpenTK.Windowing.Common.CursorState.Grabbed)
+                {
+                    var deltaX = mouse.X - _lastPos.X;
+                    var deltaY = mouse.Y - _lastPos.Y;
+                    _lastPos = new Vector2(mouse.X, mouse.Y);
 
-                _camera.Yaw += deltaX * sensitivy;
-                _camera.Pitch -= deltaY * sensitivy;
+                    _camera.Yaw += deltaX * sensitivy;
+                    _camera.Pitch -= deltaY * sensitivy;
+
+                }
             }
 
          

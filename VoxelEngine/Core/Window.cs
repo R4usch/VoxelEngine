@@ -152,6 +152,8 @@ namespace VoxelEngine.Core
         
         public override void Run()
         {
+            Console.WriteLine("Run chamado");
+  
             base.Run();
         }
 

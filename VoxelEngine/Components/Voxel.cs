@@ -21,6 +21,8 @@ namespace VoxelEngine.Components
         float[] vertices;
         uint[]  indices = VoxelConstants.VOXEL_CUBE_INDICES;
 
+        Scenes.Scene scene;
+        
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
 
@@ -35,7 +37,9 @@ namespace VoxelEngine.Components
 
         public Voxel(Scenes.Scene _scene, Color4 color) 
         {
-            _scene.objectManager.PushVoxel(this);
+            this.scene = _scene;
+
+            this.scene.objectManager.PushVoxel(this);
 
             vertices = VoxelConstants.GetVoxelColored(color.R, color.G, color.B);
 
@@ -84,11 +88,15 @@ namespace VoxelEngine.Components
 
         }
 
+        public void Destroy()
+        {
+            this.scene.objectManager.DestroyVoxel(this);
+        }
         internal void Render(double deltaTime)
         {
             // Adiciona as vertexs desse objeto para ser trabalhado
             GL.BindVertexArray(VBO);
-
+            GL.BindVertexArray(VAO);
 
             Window.shader.SetMatrix4("model", GetModelMatrix());
 

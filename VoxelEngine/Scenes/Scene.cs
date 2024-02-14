@@ -64,7 +64,7 @@ namespace VoxelEngine.Scenes
 
             public bool DestroyVoxel(VoxelEngine.Components.Voxel _voxel)
             {
-                _voxelObjects.Add(_voxel);
+                _voxelObjects.Remove(_voxel);
                 return true;
             }
         }

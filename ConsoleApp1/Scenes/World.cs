@@ -17,9 +17,10 @@ namespace MyGame.Scenes
         Camera _camera;
 
         float freq = 1;
-        int chunks_quantity = 2;
+        static int chunks_quantity = 1;
         public static bool debug_lines = false;
-        public static bool colored_voxels = false;
+        public static bool colored_voxels = true;
+        public static bool invert_x = false;
 
         int cameraMode = 0;
 
@@ -29,7 +30,6 @@ namespace MyGame.Scenes
         {
             base.onLoad();
 
-            GenerateCubes();
 
             _camera = new Camera(45f);
             _camera.Position = new Vector3();
@@ -38,27 +38,32 @@ namespace MyGame.Scenes
             _camera.Pitch = -90;
             _camera.Position = new Vector3(0, 90, 0);
 
+            GenerateCubes();
             //VoxelEngine.Core.Window.game.CursorState = CursorState.Grabbed;
         }
 
         void GenerateCubes()
         {
-
+            Console.WriteLine("Gerando cubos");
             for(int i = 0; i < chunks.Count; i++)
             {
                 chunks[i].Destroy();
             }
 
+            for(int i = 0; i < chunks.Count; i++)
+            {
+                chunks.Remove(chunks[i]);
+            }
+
             FastNoiseLite noise = new FastNoiseLite();
-            noise.SetSeed(Randomic.NextInt(0,99999));
+            noise.SetSeed(Randomic.NextInt(111111,999999));
             noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 
             for(int i = 0; i < chunks_quantity; i++)
             {
                 for(int ii = 0; ii < chunks_quantity; ii++)
                 {
-                    Chunk _chunk = new Chunk(i * Map.Chunk.CHUNK_SIZE, ii * Map.Chunk.CHUNK_SIZE, noise);
-
+                    Chunk _chunk = new Chunk((invert_x ? -1 : 1) * (i * Chunk.CHUNK_SIZE), ii * Chunk.CHUNK_SIZE, noise);
                     chunks.Add(_chunk);
 
                 }
@@ -73,21 +78,26 @@ namespace MyGame.Scenes
             ImGui.SliderInt("Chunks", ref chunks_quantity, 0, 100);
             ImGui.SliderInt("Chunk Size", ref Chunk.CHUNK_SIZE, 1, 16);
    
-
             ImGui.Checkbox("Debug lines", ref debug_lines);
             ImGui.Checkbox("Voxel Colorido", ref colored_voxels);
-
-
-            //if (ImGui.Button("Opa"))
-            //{
-            //    //Perlin perlin = new Perlin();
-
-            //    //Console.WriteLine(perlin.perlin(1, 1, 1));
-            //}
+            ImGui.Checkbox("Inverter X", ref invert_x);
 
             if (ImGui.Button("Generate"))
             {
                 GenerateCubes();
+            }
+
+            if (ImGui.Button("Destroy"))
+            {
+                for (int i = 0; i < chunks.Count; i++)
+                {
+                    chunks[i].Destroy();
+                }
+
+                for (int i = 0; i < chunks.Count; i++)
+                {
+                    chunks.Remove(chunks[i]);
+                }
             }
 
             if (ImGui.Button("Print Camera Position"))

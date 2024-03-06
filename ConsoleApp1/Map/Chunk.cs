@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VoxelEngine.Components;
 using VoxelEngine.Mathf;
+using System.Threading;
 
 namespace MyGame.Map
 {
@@ -21,63 +22,55 @@ namespace MyGame.Map
 
         public Chunk(int chunkCenterX, int chunkCenterY, FastNoiseLite noise)
         {
-            // X
-            for(int _x = chunkCenterX-CHUNK_SIZE/2; _x < (chunkCenterX+ CHUNK_SIZE / 2); _x++)
-            {
-                for(int _y = chunkCenterY- CHUNK_SIZE / 2; _y < (chunkCenterY+ CHUNK_SIZE / 2); _y++)
-                {
-                    float vY = noise.GetNoise(_x, _y);
-                    float Yfixed = Randomic.Next(vY, -1, 15);
+            Console.WriteLine("Chunk Center X: " + chunkCenterX + "|Chunk Center Y: " +  chunkCenterY);
 
-                    Color4 color_before = new(vY,vY, vY, 1);
+            for(int x = 0; x < CHUNK_SIZE; x++)
+            {
+                for(int y = 0; y < CHUNK_SIZE; y++)
+                {
+                    //Thread.Sleep(1000);
+                    int _x = x + chunkCenterX / 2;
+                    int _z = y + chunkCenterY / 2;
+
+                    float noiseValue = noise.GetNoise(_x, _z);
+
+                    int _y = Randomic.Next(noiseValue, -1, 16);
+
+                    Color4 color = new Color4(noiseValue, noiseValue, noiseValue, 1);
 
                     if (World.colored_voxels)
                     {
-                        if(Yfixed < 0) // Mar
+                        switch (true)
                         {
-                            Console.WriteLine("Colorindo mar " + Yfixed);
-                            color_before = new Color4(0f, 0f, 1f, 1);
+                            case bool _ when _y <= 0: //Mar
+                                color = new(0f, 0f, 1f, 1f);
+                                break;
+
+                            default: // Grama
+                                color = new(0f, 1f, 0f, 1f);
+                                break;
                         }
-                        else
-                        {
-                            color_before = new Color4(0f, 1f, 0f, 1);
-                        }
                     }
 
-                    Color4 color = (((_x == chunkCenterX && _y == chunkCenterY) || (_x == chunkCenterX-8 || _y == chunkCenterY-8) 
-                        || (_x == chunkCenterX + 8 || _y == chunkCenterY + 8))) && World.debug_lines ? new (1,1,1,1) : color_before;
-
-                    Voxel voxel = new Voxel(color);
-                    Vector3 pos = new Vector3(_x, Yfixed, _y);
-                    voxel.Position = pos;
-
-                    Console.WriteLine("X : " + _x + "|CHUNK X : " + (_x + CHUNK_SIZE / 2) + "|Y : " + _y + "|CHUNK Y : " + (_y + CHUNK_SIZE / 2)
-                        +"|CENTER X: " + chunkCenterX + "|CENTER Y: " + chunkCenterY);
-
-                    if(_x + CHUNK_SIZE / 2 >= 16 || _y + CHUNK_SIZE / 2 >= 16)
+                    Voxel voxel = new Voxel(color)
                     {
-                        Console.WriteLine("Posição errada ");
-                        _x = chunkCenterX + CHUNK_SIZE / 2;
-                        break;
-                    }
-                    else
-                    {
+                        Position = new(_x, _y, _z)
+                    };
 
-                        voxels[_x + CHUNK_SIZE / 2, _y + CHUNK_SIZE / 2] = voxel;
-                    }
+                    int xArray = x;
+                    int zArray = y;
 
-                    
-                    //_voxels.Add(voxel);
+                    Console.WriteLine(xArray + "|" + zArray);
+                    voxels[xArray, zArray] = voxel; // <--- Armazenar voxels 
                 }
-         
             }
         }
 
         public void Destroy()
         {
-            for (int x = 0; x < voxels.GetLength(0); x++)
+            for (int x = 0; x < CHUNK_SIZE; x++)
             {
-                for (int y = 0; y < voxels.GetLength(1); y++)
+                for (int y = 0; y < CHUNK_SIZE; y++)
                 {
                     Voxel v = voxels[x, y];
                     if (v != null)
@@ -88,17 +81,7 @@ namespace MyGame.Map
                 }
             }
 
-            //for(int i = 0; i < _voxels.Count; i++)
-            //{
-            //    Voxel voxel = _voxels[i];
-            //    voxel.Destroy();
-            //}
-
-            //for (int i = 0; i < _voxels.Count; i++)
-            //{
-            //    Voxel voxel = _voxels[i];
-            //    _voxels.Remove(voxel);
-            //}
+  
         }
     }
 }

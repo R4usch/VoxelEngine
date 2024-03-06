@@ -34,7 +34,7 @@ namespace VoxelEngine.Scenes
 
 
             internal Mutex voxelMutex = new Mutex();
-            public List<VoxelEngine.Components.Voxel> _voxelObjects = new List<VoxelEngine.Components.Voxel>();
+            public List<Voxel> _voxelObjects = new List<Voxel>();
 
 
 
@@ -49,7 +49,7 @@ namespace VoxelEngine.Scenes
                 return _gameObjects.Remove(_gameObject);  
             }
 
-            public bool PushVoxel(VoxelEngine.Components.Voxel _voxel)
+            public bool PushVoxel(Voxel _voxel)
             {
 
                 voxelMutex.WaitOne();
@@ -65,7 +65,7 @@ namespace VoxelEngine.Scenes
                 return true;
             }
 
-            public bool DestroyVoxel(VoxelEngine.Components.Voxel _voxel)
+            public bool DestroyVoxel(Voxel _voxel)
             {
                 _voxelObjects.Remove(_voxel);
                 return true;

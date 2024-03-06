@@ -5,6 +5,7 @@ using VoxelEngine.Components;
 using OpenTK.Windowing.Common;
 using VoxelEngine.Mathf;
 using SimplexNoise;
+using MyGame.Map;
 
 namespace MyGame.Scenes
 {
@@ -15,13 +16,15 @@ namespace MyGame.Scenes
 
         Camera _camera;
 
-        int _voxels = 64;
         float freq = 1;
-        int columns = 16;
-        float amp = 1;
-        float GRID_SIZE = 16;
-        int octaves = 4;
-        float persistance = 12;
+        int chunks_quantity = 1;
+        public static bool debug_lines = false;
+        public static bool colored_voxels = false;
+
+        int cameraMode = 0;
+
+
+
         public override void onLoad()
         {
             base.onLoad();
@@ -35,45 +38,30 @@ namespace MyGame.Scenes
             _camera.Pitch = -90;
             _camera.Position = new Vector3(0, 90, 0);
 
-            VoxelEngine.Core.Window.game.CursorState = CursorState.Grabbed;
+            //VoxelEngine.Core.Window.game.CursorState = CursorState.Grabbed;
         }
 
         void GenerateCubes()
         {
-            //int seed = Randomic.NextInt(0, 999999);
 
-            //for (int i = voxels.Count - 1; i >= 0; i--)
-            //{
-            //    Voxel v = voxels[i];
-            //    voxels.RemoveAt(i);
-            //    v.Destroy();
-            //}
-
+            for(int i = 0; i < chunks.Count; i++)
+            {
+                chunks[i].Destroy();
+            }
 
             FastNoiseLite noise = new FastNoiseLite();
-            noise.SetSeed(Randomic.NextInt(0, 999999));
-            //noise.SetFrequency(freq);
+            noise.SetSeed(Randomic.NextInt(0,99999));
             noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 
-            for(int col = 0; col < columns; col++)
+            for(int i = 0; i < chunks_quantity; i++)
             {
-                for(int i = 0; i < _voxels; i++)
+                for(int ii = 0; ii < chunks_quantity; ii++)
                 {
+                    Chunk _chunk = new Chunk(i * Map.Chunk.CHUNK_SIZE, ii * Map.Chunk.CHUNK_SIZE, noise);
 
-                    float n = -(noise.GetNoise(i, col));
-                    Console.WriteLine(n);
+                    chunks.Add(_chunk);
 
-                    int y = Randomic.Next(n, -1, 32);
-
-                    Voxel _voxel = new Voxel(new Color4(n, 
-                                                        n, 
-                                                        n, 
-                                                        1f));
-                    _voxel.Position = new Vector3(i, y, col);
-
-                    voxels.Add(_voxel);
                 }
-
             }
         }
 
@@ -82,7 +70,12 @@ namespace MyGame.Scenes
 
             ImGui.Begin("Noise");
             ImGui.SliderFloat("Frequencia", ref freq, 0, 100);
-            ImGui.SliderInt("Colunas", ref columns, 0, 100);
+            ImGui.SliderInt("Chunks", ref chunks_quantity, 0, 100);
+            ImGui.SliderInt("Chunk Size", ref Chunk.CHUNK_SIZE, 1, 16);
+   
+
+            ImGui.Checkbox("Debug lines", ref debug_lines);
+            ImGui.Checkbox("Voxel Colorido", ref colored_voxels);
 
 
             //if (ImGui.Button("Opa"))
@@ -104,10 +97,10 @@ namespace MyGame.Scenes
 
             if (ImGui.Button("Clear"))
             {
-                foreach (Voxel voxel1 in voxels)
-                {
-                    voxel1.Destroy();
-                }
+                //foreach (Voxel voxel1 in voxels)
+                //{
+                //    voxel1.Destroy();
+                //}
             }
 
             ImGui.End();
@@ -137,11 +130,14 @@ namespace MyGame.Scenes
                 _camera.Pitch = 0;
                 _camera.Yaw = 0;
                 _camera.Position = Vector3.Zero;
+                cameraMode = 1;
+
             }
             if (VoxelEngine.Core.Window.game.IsKeyDown(Keys.K)){
                 _camera.Pitch = -90;
                 _camera.Yaw = -90;
                 _camera.Position = new Vector3(0, 90, 0);
+                cameraMode = 0;
             }
 
             if (VoxelEngine.Core.Window.game.IsKeyDown(Keys.V))
@@ -163,11 +159,29 @@ namespace MyGame.Scenes
             }
             if (VoxelEngine.Core.Window.game.IsKeyDown(Keys.W))
             {
-                _camera.Position += _camera.Front * speed * (float)deltaTime;
+                if(cameraMode == 0)
+                {
+                    _camera.Position += _camera.Up * speed * (float)deltaTime;
+
+                }
+                else
+                {
+                    _camera.Position += _camera.Front * speed * (float)deltaTime;
+
+                }
             }
             if (VoxelEngine.Core.Window.game.IsKeyDown(Keys.S))
             {
-                _camera.Position -= _camera.Front * speed * (float)deltaTime;
+                if (cameraMode == 0)
+                {
+                    _camera.Position -= _camera.Up * speed * (float)deltaTime;
+
+                }
+                else
+                {
+                    _camera.Position -= _camera.Front * speed * (float)deltaTime;
+
+                }
             }
             if (VoxelEngine.Core.Window.game.IsKeyDown(Keys.LeftShift))
             {

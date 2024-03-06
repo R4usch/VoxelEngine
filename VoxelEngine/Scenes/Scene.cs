@@ -35,6 +35,9 @@ namespace VoxelEngine.Scenes
 
             internal Mutex voxelMutex = new Mutex();
             public List<VoxelEngine.Components.Voxel> _voxelObjects = new List<VoxelEngine.Components.Voxel>();
+
+
+
             public bool PushGameObject(GameObject _gameObject)
             {
                 _gameObjects.Add(_gameObject);
@@ -67,6 +70,8 @@ namespace VoxelEngine.Scenes
                 _voxelObjects.Remove(_voxel);
                 return true;
             }
+
+ 
         }
 
         internal ObjectManager objectManager = new ObjectManager();
@@ -78,6 +83,11 @@ namespace VoxelEngine.Scenes
         public List<GameObject> GetGameObjects()
         {
             return objectManager._gameObjects;
+        }
+        
+        public int GetTotalVoxels()
+        {
+            return objectManager._voxelObjects.Count;
         }
 
         public List<VoxelEngine.Components.Voxel> GetVoxels()

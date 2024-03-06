@@ -17,7 +17,7 @@ namespace MyGame.Scenes
         Camera _camera;
 
         float freq = 1;
-        int chunks_quantity = 1;
+        int chunks_quantity = 2;
         public static bool debug_lines = false;
         public static bool colored_voxels = false;
 

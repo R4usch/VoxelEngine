@@ -10,13 +10,18 @@ namespace VoxelEngine.Components
 {
     public class Camera
     {
-        public Vector3 Position { get; set; }
-        public Vector3 Rotation { get; set; }
+
+        public enum VIEW_TYPE
+        {
+            PERSPECTIVE,
+            ORTOGRAPHIC
+        }
+
 
         public float _fov = MathHelper.PiOver2;
 
         public float depthNear = 0.1f;
-        public float depthFar  = 100.0f;
+        public float depthFar  = 1000.0f;
 
         Vector3 _front = -Vector3.UnitZ;
         Vector3 _up = Vector3.UnitY;
@@ -28,6 +33,23 @@ namespace VoxelEngine.Components
         // Rotação em volta do angulo Y ( Radians )
         private float _yaw;
 
+        private Vector3 _position;
+
+        public Vector3 Up => _up;
+        public Vector3 Right => _right;
+        public Vector3 Front => _front;
+
+
+
+        public Vector3 Position 
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+                
+            }
+        }
 
         // Campo de visão, indo de 1f a 90f
         public float Fov
@@ -83,7 +105,8 @@ namespace VoxelEngine.Components
 
         private void UpdateVectors()
         {
-            // Primeiramente, a front é calculado 
+            // Primeiramente, a front é calculado
+            
             _front.X = MathF.Cos(_pitch) * MathF.Cos(_yaw);
             _front.Y = MathF.Sin(_pitch);
             _front.Z = MathF.Cos(_pitch) * MathF.Sin(_yaw);

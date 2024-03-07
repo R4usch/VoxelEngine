@@ -28,7 +28,6 @@ namespace VoxelEngine.Components
 
         public Vector3 Scale = new Vector3(1, 1, 1);
 
-
         public Voxel() : this(Scenes.Scene.getCurrentScene(), new Color4(1,1,1,1)){}
 
         public Voxel(Color4 color) : this(Scenes.Scene.getCurrentScene(), color){}
@@ -68,15 +67,12 @@ namespace VoxelEngine.Components
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
 
-
         }
 
 
 
         internal Matrix4 GetModelMatrix()
         {
-
-
             Matrix4 model = Matrix4.CreateTranslation(Position)
                             * Matrix4.CreateScale(Scale)
                             * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(Rotation.X))
@@ -84,8 +80,6 @@ namespace VoxelEngine.Components
                             * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(Rotation.Z));
                             
             return model;
-            
-
         }
 
         public void Destroy()

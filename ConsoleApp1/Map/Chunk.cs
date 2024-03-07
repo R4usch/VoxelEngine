@@ -36,17 +36,19 @@ namespace MyGame.Map
 
                     int _y = Randomic.Next(noiseValue, -1, 16);
 
-                    Color4 color = new Color4(noiseValue, noiseValue, noiseValue, 1);
+                    Color4 color = new(noiseValue, noiseValue, noiseValue, 1f);
 
                     if (World.colored_voxels)
                     {
                         switch (true)
                         {
-                            case bool _ when _y <= 0: //Mar
+                            case bool _ when _y <= 0: // Mar
                                 color = new(0f, 0f, 1f, 1f);
                                 break;
-
-                            default: // Grama
+                            case bool _ when _y <= 1: // Terra
+                                color = new(0.69f, 0.431f, 0f, 1f);
+                                break;
+                            default:                  // Grama
                                 color = new(0f, 1f, 0f, 1f);
                                 break;
                         }

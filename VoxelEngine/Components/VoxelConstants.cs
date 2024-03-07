@@ -29,11 +29,11 @@ namespace VoxelEngine.Components
 
         public static uint[] VOXEL_CUBE_INDICES =
         {
-            // Front
+            // Right
             0, 1, 3, // first triangle
             1, 2, 3, // second triangle
             
-            // Back
+            // Left
             4, 5, 7, // first triangle
             5, 6, 7, // second triangle
 
@@ -41,78 +41,79 @@ namespace VoxelEngine.Components
             7, 3, 4,
             4, 0, 3,
 
-            // Right
+            // Bottom
+            2, 6, 5,
+            2, 1, 5,
+
+            // Back
             4, 5, 1,
             4, 0 ,1,
 
-            // Left
+            // Front
             6, 7, 2,
             7, 3, 2,
 
-            // Bottom
-            2, 6, 5,
-            2, 1, 5
 
         };
 
+        static uint[] front =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
 
-        [Obsolete("Este método é descontinuado. Ele tem 36 vertices")]
-        public static readonly float[] VOXEL_CUBE_VERTICES =  
-            [
-                // Face da frente
-                // Posição          //Cores       
-                    0.5f,  0.5f, 0f,   1.0f, 0.0f, 0.0f,  // Topo  direita   // Face frente begin
-                    0.5f, -0.5f, 0f,   0.0f, 1.0f, 0.0f,  // Baixo direita
-                -0.5f, -0.5f, 0f,   0.0f, 0.0f, 1.0f,  // Baixo esquerda // Triangle 1 End
+        static uint[] back =
+        {
+            4, 5, 7,
+            5, 6, 7,
+        };
 
-                -0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // Topo esquerda  // Triangle 2 Begin
-                    0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // Topo direita
-                -0.5f,-0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda // Face frente end
+        static uint[] top =
+        {
+            7, 3, 4,
+            4, 0, 3,
+        };
 
-                    0.5f,  0.5f, -1f,   1.0f, 0.0f, 0.0f,  // Topo  direita  // Face back begin
-                    0.5f, -0.5f, -1f,   0.0f, 1.0f, 0.0f,  // Baixo direita
-                -0.5f, -0.5f, -1f,   0.0f, 0.0f, 1.0f,  // Baixo esquerda // Triangle 1 End
+        static uint[] right =
+        {
+            4, 5, 1,
+            4, 0 ,1,
+        };
 
-                -0.5f, 0.5f, -1f,  0.0f, 1.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    0.5f, 0.5f, -1f,  1.0f, 0.0f, 0.0f,  // Topo direita
-                -0.5f,-0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face b
+        static uint[] left =
+        {
+            6, 7, 2,
+            7, 3, 2,
+        };
 
-                -0.5f, 0.5f, -0f,  0.0f, 1.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    0.5f, 0.5f, -1f,  1.0f, 0.0f, 0.0f,  // Topo direita
-                -0.5f, 0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
+        static uint[] bottom =
+        {
+            2, 6, 5,
+            2, 1, 5
+        };
 
-                    0.5f, 0.5f, -0f,  0.0f, 1.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    0.5f, 0.5f, -1f,  1.0f, 0.0f, 0.0f,  // Topo direita
-                -0.5f, 0.5f, -0f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
+        public static uint[] GetVoxelIndices(bool[] faces)
+        {
 
-                -0.5f, -0.5f, -0f,  1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    0.5f, -0.5f, -1f,  0.0f, 1.0f, 0.0f,  // Topo direita
-                -0.5f, -0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
+            List<uint> retorno = new List<uint>();
 
-                    0.5f, -0.5f, -0f,  1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    0.5f, -0.5f, -1f,  0.0f, 1.0f, 0.0f,  // Topo direita
-                -0.5f, -0.5f, -0f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
+            for(int i = 1; i <= faces.Length; i++)
+            {
+                if (faces[i - 1])
+                {
+                    for (int ii = 0; ii < 6; ii++)
+                    { 
+                        retorno.Add(VOXEL_CUBE_INDICES[(i-1) * 6 + ii]);
+                    }
+                }
+            }
 
-                -0.5f, -0.5f, -0f,  1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    -0.5f, 0.5f, -1f,  0.0f, 1.0f, 0.0f,  // Topo direita
-                -0.5f, -0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
 
-                -0.5f, -0.5f, -0f,  1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                -0.5f, 0.5f, -0f,   0.0f, 1.0f, 0.0f,  // Topo direita
-                -0.5f, 0.5f, -1f,   0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back
-                                                    
-                -0.5f, -0.5f, -1f,  1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                    -0.5f, 0.5f, -1f,  0.0f, 1.0f, 0.0f,  // Topo direita
-                -0.5f, -0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
 
-                0.5f, -0.5f, -0f,  1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                0.5f, 0.5f, -0f,  0.0f, 1.0f, 0.0f,  // Topo direita
-                0.5f, 0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
+            return retorno.ToArray();
+        }
 
-                0.5f, -0.5f, -0f, 1.0f, 0.0f, 0.0f,  // Topo esquerda    // Triangle 2 Begin
-                0.5f, 0.5f, -1f,  0.0f, 1.0f, 0.0f,  // Topo direita
-                0.5f, -0.5f, -1f,  0.0f, 0.0f, 1.0f,   // Baixo esquerda   // Face back end
-            ];
+
         public static float[] GetVoxelColored(float R, float G, float  B)
         {
             

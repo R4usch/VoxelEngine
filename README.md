@@ -6,7 +6,6 @@
 ## DEV`s
 
 * [Rafael Raush](https://github.com/R4usch)
-* [Guzztavo](https://github.com/GUS74V0)
 
 ## Instruções de utilização
 

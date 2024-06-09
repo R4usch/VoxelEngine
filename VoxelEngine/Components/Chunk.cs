@@ -8,33 +8,36 @@ using OpenTK.Graphics.OpenGL;
 using VoxelEngine.Core;
 using VoxelEngine.Mathf;
 using System.Drawing;
+using MyGame;
+using Microsoft.VisualBasic;
+using ImGuiNET;
 
 
 namespace VoxelEngine.Components.Chunks
 {
-    // Novo Voxel Otimizado.
-    // Capaz de sumir com faces para melhor desempenho
-    public class Voxel
+    public enum BlockType
     {
-        int VAO; // Vertex Array Object
-        int VBO; // Vertex Buffer Object
-        int EBO; // Elements Buffer Object
-                                           //Xpositive Xnegative Ypositive Ynegative Znegative Zpositive
-        public bool[] faces = new bool[6] {  true,     true,     true,     true,     true,     true };
+        DEFAULT,
+        AIR
+    }
 
-        uint[] indices = VoxelConstants.VOXEL_CUBE_INDICES;
+    public class Voxel2
+    {
+        int VBO;
+        int VAO;
+        int EBO;
         float[] vertices;
-        public Vector3 position { get; set; }
 
-        public Vector2 chunk_position { get; set; }
+        public uint[] indices;
 
-        public Vector3 scale = new(1f, 1f, 1f);
-        public Vector3 rotation { get; set; }
+        public BlockType blockType;
 
-
-        public Voxel(Color4 color)
+        public Voxel2(BlockType _blockType)
         {
-            vertices = VoxelConstants.GetVoxelColored(color.R, color.G, color.B);
+            blockType = _blockType;
+            if (blockType == BlockType.AIR) return;
+
+            vertices = VoxelConstants.GetVoxelColored(Randomic.NextFloat(0,1), Randomic.NextFloat(0, 1), Randomic.NextFloat(0, 1));
 
             // VBO = Local na memoria onde sera armazenado as vertices
             // Bind VBO (VERTEX BUFFER OBJECT)
@@ -51,92 +54,142 @@ namespace VoxelEngine.Components.Chunks
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
-            //Cores. Atualmente desabilitado
             //Habilita os atributos de cor na vertex na localização 1  // Offset é para onde ele começará a ler. Como a posição fica de 0 a 3, ele começará do 3
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
-
-            UpdateIndices();
         }
-        internal Matrix4 GetModelMatrix()
+
+        public void Render(Matrix4 matrix)
+        {
+            if (blockType == BlockType.AIR) return;
+
+            // Alocar VAO e VBO
+            GL.BindVertexArray(VAO);
+            GL.BindVertexArray(VBO);
+            // Alocar element buffer object
+            EBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+
+
+            // Gerar matrix
+            Window.shader.SetMatrix4("model", matrix);
+
+            GL.DrawElements(PrimitiveType.Triangles, VoxelConstants.VOXEL_CUBE_INDICES.Length, DrawElementsType.UnsignedInt, 0);
+        }
+    }
+
+    public class Chunk
+    {
+        public bool[] _faces = new bool[6] { true, true, true, true, true, true };
+
+
+        public static int CHUNK_SIZE = 12;
+
+        public Voxel2[,,] voxels = new Voxel2[CHUNK_SIZE, Settings.CHUNK_MAX_HEIGHT, CHUNK_SIZE];
+        public Voxel2[,,] visible_voxels = new Voxel2[CHUNK_SIZE, Settings.CHUNK_MAX_HEIGHT, CHUNK_SIZE];
+
+        bool GENERATING_CHUNK = true;
+        
+
+        internal Matrix4 GetModelMatrix(Vector3 position)
         {
             Matrix4 model = Matrix4.CreateTranslation(position)
-                            * Matrix4.CreateScale(scale)
-                            * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(rotation.X))
-                            * Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(rotation.Y))
-                            * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(rotation.Z));
+                            * Matrix4.CreateScale(1)
+                            * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(0))
+                            * Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(0))
+                            * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(0));
 
             return model;
         }
 
-        public void UpdateIndices()
+        public Chunk() 
         {
-            indices = VoxelConstants.GetVoxelIndices(faces);
+            Console.WriteLine("Generating chunk");
+            for (int x = 0; x < CHUNK_SIZE; x++)
+            {
+                for (int y = 0;  y < Settings.CHUNK_MAX_HEIGHT; y++)
+                {
+                    for (int z = 0; z < CHUNK_SIZE; z++)
+                    {
+                        if (y <= 75)
+                        {
+                            voxels[x, y, z] = new Voxel2(BlockType.DEFAULT);
+                        }
+                        else // AIR
+                        {
+                            voxels[x, y, z] = new Voxel2(BlockType.AIR);
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Chunk generated");
 
-            EBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+            UpdateChunk();
+            GENERATING_CHUNK = false;
         }
 
-        public void Render()
+        private bool IsWithinBounds(int x, int y, int z)
         {
-            // Adiciona as vertexs desse objeto para ser trabalhado
-            GL.BindVertexArray(VBO);
-            GL.BindVertexArray(VAO);
-
-            Window.shader.SetMatrix4("model", GetModelMatrix());
-
-
-            GL.DrawElements(PrimitiveType.Triangles, VoxelConstants.VOXEL_CUBE_INDICES.Length, DrawElementsType.UnsignedInt, 0);
+            return ((x >= 0) && (x < CHUNK_SIZE)) && ((y >= 0) && (y < Settings.CHUNK_MAX_HEIGHT)) && ((z >= 0) && (z < CHUNK_SIZE)) ;
         }
 
-        public void VerifyFaces()
+        private bool IsAir(int x, int y, int z)
         {
-
+            return IsWithinBounds(x, y, z) ? voxels[x, y, z].blockType == BlockType.AIR : true;
         }
-    }
-    public class Chunk
-    {
 
-        public static int CHUNK_SIZE = 16;
-
-        int VBO;
-
-        public Voxel[,] voxels = new Voxel[CHUNK_SIZE, CHUNK_SIZE];
-
-        public Chunk(int chunkCenterX, int chunkCenterY) 
+        public void UpdateChunk()
         {
             for (int x = 0; x < CHUNK_SIZE; x++)
             {
-                for (int y = 0; y < CHUNK_SIZE; y++)
+                for (int y = 0; y < Settings.CHUNK_MAX_HEIGHT; y++)
                 {
-                    //Console.WriteLine("Criando voxels");
-                    int _x = x + chunkCenterX / 2;
-                    int _z = y + chunkCenterY / 2;
-
-                    Voxel voxel = new Voxel(new Color4(Randomic.NextFloat(0f,1f), Randomic.NextFloat(0f, 1f), Randomic.NextFloat(0f, 1f), 1f))
+                    for (int z = 0; z < CHUNK_SIZE; z++)
                     {
-                        position = new(_x, -1, _z)
-                    };
+                        Voxel2 block = voxels[x, y, z];
 
+                        if (block.blockType == BlockType.AIR)
+                        {
+                            // DO NOTHING
+                        }
+                        else
+                        { 
+                            bool[] _faces = new bool[6] { false, false, false, false, false, false };
 
-                    voxels[x,y] = voxel;
+                            _faces[0] = IsAir(x, y, z + 1);
+                            _faces[1] = IsAir(x, y, z - 1);
+                            _faces[2] = IsAir(x, y + 1, z);
+                            _faces[3] = IsAir(x, y - 1, z);
+                            _faces[4] = IsAir(x + 1 , y, z);
+                            _faces[5] = IsAir(x - 1, y, z);
+
+                            block.indices = VoxelConstants.GetVoxelIndices(_faces);
+                        }
+                    }
                 }
             }
         }
-
-
-
         public void Render()
         {
+            if (GENERATING_CHUNK) return;
             for (int x = 0; x < CHUNK_SIZE; x++)
             {
-                for (int y = 0; y < CHUNK_SIZE; y++)
+                for (int y = 0; y < Settings.CHUNK_MAX_HEIGHT; y++)
                 {
-                    Voxel v = voxels[x, y];
-                    if (v != null)
+                    for (int z = 0; z < CHUNK_SIZE; z++)
                     {
-                        v.Render();
+                        Voxel2 block = voxels[x, y, z];
+
+                        if(block.blockType == BlockType.AIR)
+                        {
+                            // DO NOTHING
+                        }
+                        else
+                        {
+
+                            block.Render(GetModelMatrix(new Vector3(x, y, z)));
+                        }
                     }
                 }
             }

@@ -62,7 +62,7 @@ namespace VoxelEngine.Core
 
             GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f); // Cor de limpeza da tela
             GL.Enable(EnableCap.DepthTest); // Habilita profundida na tela
-
+            
             loaded = true;
 
             // Carrega a cena

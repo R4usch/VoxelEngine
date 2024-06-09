@@ -10,14 +10,6 @@ namespace VoxelEngine.Components
 {
     public class Camera
     {
-
-        public enum VIEW_TYPE
-        {
-            PERSPECTIVE,
-            ORTOGRAPHIC
-        }
-
-
         public float _fov = MathHelper.PiOver2;
 
         public float depthNear = 0.1f;
@@ -29,7 +21,6 @@ namespace VoxelEngine.Components
 
         // Rotação em volta do angulo X ( Radians )
         private float _pitch;
-
         // Rotação em volta do angulo Y ( Radians )
         private float _yaw;
 
@@ -38,8 +29,6 @@ namespace VoxelEngine.Components
         public Vector3 Up => _up;
         public Vector3 Right => _right;
         public Vector3 Front => _front;
-
-
 
         public Vector3 Position 
         {
@@ -93,7 +82,6 @@ namespace VoxelEngine.Components
         {
             return Matrix4.LookAt(Position, Position + _front, _up);
         }
-
 
         internal Matrix4 GetProjectionMatrix()
         {

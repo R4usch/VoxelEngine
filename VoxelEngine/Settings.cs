@@ -9,6 +9,6 @@ namespace MyGame
     public static class Settings
     {
         public static int CHUNK_SIZE = 16;
-        public static int CHUNK_MAX_HEIGHT = 255;
+        public static int CHUNK_MAX_HEIGHT = 2;
     }
 }

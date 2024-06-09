@@ -25,7 +25,7 @@ namespace VoxelEngine.Mathf
 
         public static int NextInt(int min, int max)
         {
-            return random.Next() * (max - min) + min;
+            return random.Next(min, max);
         }
 
     }

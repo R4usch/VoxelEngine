@@ -25,7 +25,7 @@ namespace MyGame.Scenes
 
         public static bool wireframe = false;
 
-        int cameraMode = 2;
+        int cameraMode = 0;
 
         //VoxelEngine.Components.Chunk.Voxel _voxel;
 
@@ -79,7 +79,7 @@ namespace MyGame.Scenes
 
             if(ImGui.Checkbox("Wireframe", ref wireframe))
             {
-                Console.WriteLine("Oba");
+                
                 if (wireframe)
                 {
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
@@ -89,6 +89,7 @@ namespace MyGame.Scenes
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                 }
             }
+
 
             if (ImGui.Button("Print Camera Position"))
             {
@@ -124,7 +125,7 @@ namespace MyGame.Scenes
                 case 0:
                     _camera.Yaw = -90;
                     _camera.Pitch = -90;
-                    _camera.Position = new Vector3(0, 90, 0);
+                    _camera.Position = new Vector3(5, 20, 5);
                     break;
                 case 1:
                     _camera.Yaw = 0;

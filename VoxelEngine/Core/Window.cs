@@ -139,8 +139,6 @@ namespace VoxelEngine.Core
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
-            Console.WriteLine(Window.game.ClientRectangle.Size.X);
-
             if(currentCamera != null)
             {
                 projectionMatrix = currentCamera.GetProjectionMatrix();
@@ -152,7 +150,6 @@ namespace VoxelEngine.Core
         
         public override void Run()
         {
-            Console.WriteLine("Run chamado");
   
             base.Run();
         }

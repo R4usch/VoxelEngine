@@ -113,6 +113,28 @@ namespace VoxelEngine.Components
             return retorno.ToArray();
         }
 
+        public static float[] CombineVoxel(Vector3 firstVoxelPos, Vector3 secondVoxelPos, float R, float G, float B)
+        {
+            float x = secondVoxelPos.X - firstVoxelPos.X;
+            float y = secondVoxelPos.Y - firstVoxelPos.Y;
+
+            float[] retorno = {
+                // Front vertices
+                 x+0.5f,  0.5f, 0.5f, R, G, B,  // top right     0
+                 x+0.5f, -0.5f, 0.5f, R, G, B,  // bottom right  1
+                -0.5f, -0.5f, 0.5f, R, G, B,  // bottom left   2
+                -0.5f,  0.5f, 0.5f, R, G, B,  // top left      3
+
+                // Back vertices
+
+                 x+0.5f,  0.5f, -0.5f,R, G, B,  // top right     4
+                 x+0.5f, -0.5f, -0.5f,R, G, B,  // bottom right  5
+                -0.5f, -0.5f, -0.5f,R, G, B,  // bottom left   6
+                -0.5f,  0.5f, -0.5f,R, G, B,   // top left      7
+            };
+
+            return retorno;
+        }
 
         public static float[] GetVoxelColored(float R, float G, float  B)
         {

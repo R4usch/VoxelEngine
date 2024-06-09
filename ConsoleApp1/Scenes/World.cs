@@ -40,7 +40,7 @@ namespace MyGame.Scenes
             UpdateCamera();
             _camera.ChangeCamera();
 
-            chunk = new Chunk(0,0);
+            chunk = new Chunk();
 
             //VoxelEngine.Core.Window.game.CursorState = CursorState.Grabbed;
         }

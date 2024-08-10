@@ -8,7 +8,32 @@ namespace MyGame
 {
     public static class Settings
     {
-        public static int CHUNK_SIZE = 16;
-        public static int CHUNK_MAX_HEIGHT = 2;
+        public struct ChunkSize
+        {
+            int[] pos = new int[3];
+
+            public readonly int x;
+            public readonly int y;
+            public readonly int z;
+
+            public ChunkSize(int x, int y, int z)
+            {
+                pos = [x, y, z];
+
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
+            public int this[int index]
+            {
+                get 
+                {
+                    return pos[index];
+                }
+            }
+        }
+
+        public static readonly ChunkSize CHUNK_SIZE = new ChunkSize(12, 255, 12);
     }
 }

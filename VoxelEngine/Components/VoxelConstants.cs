@@ -10,8 +10,21 @@ namespace VoxelEngine.Components
 {
     public static class VoxelConstants
     {
+        public struct Vertice
+        {
+            public int x;
+            public int y;
+            public int z;
 
-        public static float[] VOXEL_CUBE_VERTICES_2 =
+            public Vertice(int x, int y, int z) 
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+        }
+
+        public static readonly float[] VOXEL_CUBE_VERTICES_2 =
         {
             // Front vertices
              0.5f,  0.5f, 0.5f,   // top right     0
@@ -27,7 +40,7 @@ namespace VoxelEngine.Components
             -0.5f,  0.5f, -0.5f   // top left      7
         };
 
-        public static uint[] VOXEL_CUBE_INDICES =
+        public static readonly uint[] VOXEL_CUBE_INDICES =
         {
             // Right
             0, 1, 3, // first triangle
@@ -56,6 +69,12 @@ namespace VoxelEngine.Components
 
         };
 
+        public static readonly uint[] QUAD_INDICES = [
+            0, 1, 3,
+            1, 2, 3,
+
+        ];
+
         static uint[] front =
         {
             0, 1, 3,
@@ -67,7 +86,7 @@ namespace VoxelEngine.Components
             4, 5, 7,
             5, 6, 7,
         };
-
+        
         static uint[] top =
         {
             7, 3, 4,
@@ -111,6 +130,34 @@ namespace VoxelEngine.Components
 
 
             return retorno.ToArray();
+        }
+
+        public static float[] CreateQuad(Vertice top_left, Vertice top_right, Vertice bottom_left, Vertice bottom_right, Color4 color)
+        {
+            //float[] retorno = {
+            //    // Front vertices
+            //     0.5f,  0.5f, 0.5f, color.R, color.G, color.B,  // top right     0
+            //     0.5f, -0.5f, 0.5f, color.R, color.G, color.B,  // bottom right  1
+            //    -0.5f, -0.5f, 0.5f, color.R, color.G, color.B,  // bottom left   2
+            //    -0.5f,  0.5f, 0.5f, color.R, color.G, color.B,  // top left      3
+
+            //    // Back vertices
+
+            //     0.5f,  0.5f, -0.5f,color.R, color.G, color.B,  // top right     4
+            //     0.5f, -0.5f, -0.5f,color.R, color.G, color.B,  // bottom right  5
+            //    -0.5f, -0.5f, -0.5f,color.R, color.G, color.B,  // bottom left   6
+            //    -0.5f,  0.5f, -0.5f,color.R, color.G, color.B,   // top left      7
+            //};
+
+            float[] retorno = {
+                // Front vertices
+                 top_right.x, top_right.y, top_right.z, color.R, color.G, color.B,  // top right     0
+                 bottom_right.x, bottom_right.y, bottom_right.z, color.R, color.G, color.B,  // bottom right  1
+                 bottom_left.x, bottom_left.y, bottom_left.z, color.R, color.G, color.B,  // bottom left   2
+                 top_left.x, top_left.y, top_left.z, color.R, color.G, color.B,  // top left      3
+            };
+
+            return retorno;
         }
 
         public static float[] CombineVoxel(Vector3 firstVoxelPos, Vector3 secondVoxelPos, float R, float G, float B)

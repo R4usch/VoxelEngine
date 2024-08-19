@@ -4,17 +4,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET" Version="1.90.1.1" />
+    <PackageReference Include="ImGui.NET" Version="1.91.0.1" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Procedures\" />
-    <Folder Include="Shaders\" />
+    <Folder Include="Components\" />
+    <Folder Include="Objects\Interfaces\" />
   </ItemGroup>
 
 </Project>

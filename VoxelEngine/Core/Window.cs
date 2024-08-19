@@ -1,43 +1,32 @@
-﻿using OpenTK.Windowing.Desktop;
+﻿using OpenTK.Windowing;
+using OpenTK.Windowing.Desktop;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-using System.Reflection;
-using VoxelEngine.Components;
-using ImGuiNET;
-using VoxelEngine.ImGUI;
+using VoxelEngine.Objects.Primordial;
+using VoxelEngine.Scenes;
+
 
 namespace VoxelEngine.Core
 {
-
-
     public class Window : GameWindow
     {
-        public static Window game;
-
-        internal static Camera currentCamera;
-
-        internal static Shader shader;
-        ShaderSettings shaderSettings;
-
-        int frameCount = 0;
-
-
-        internal static Matrix4 viewMatrix;
-        internal static Matrix4 projectionMatrix;
+        internal static Window window;
+        internal Shader shader;
 
         ImGUI.ImGUIController _imGUIcontroller;
 
-        static internal bool loaded = false;
-
-        public Window(int width, int height, string title, ShaderSettings _shaderSettings) : base (GameWindowSettings.Default, new NativeWindowSettings
+        public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings
         {
-            Size = new Vector2i(width, height),
-            Title = title
+            // Setando o tamanho da tela
+            ClientSize = new Vector2i(width, height),
+            // Setando o titulo da tela
+            Title = title,
         })
         {
-            shaderSettings = _shaderSettings;
-            game = this;
+            window = this;
+
+ 
         }
 
         protected override void OnLoad()
@@ -46,117 +35,72 @@ namespace VoxelEngine.Core
 
             _imGUIcontroller = new ImGUI.ImGUIController(ClientSize.X, ClientSize.Y);
 
-            Console.WriteLine("OpenGL Version : " + GL.GetString(StringName.Version));
-
-            // Criar instancia de shader
-            shader = new Shader(shaderSettings);
+            shader = new Shader(File.ReadAllText(".\\Shaders\\vertex.glsl"), File.ReadAllText(".\\Shaders\\fragment.glsl"));
             shader.Use();
 
-            if(currentCamera != null ) 
+            if (Camera.currentCamera != null)
             {
+                shader.SetMatrix4("view", Camera.currentCamera.GetViewMatrix());
 
-                viewMatrix = currentCamera.GetViewMatrix();
-                shader.SetMatrix4("view", viewMatrix);
-                
             }
 
-            GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f); // Cor de limpeza da tela
-            GL.Enable(EnableCap.DepthTest); // Habilita profundida na tela
-            
-            loaded = true;
+            // Define a cor de limpeza do fundo
+            GL.ClearColor(0.0f, 0.15f, 0.25f, 1.0f);
+            GL.Enable(EnableCap.DepthTest);
 
-            // Carrega a cena
-            if(Scenes.Scene.getCurrentScene() != null)
+            if (Scene.currentScene != null)
             {
-                Scenes.Scene.getCurrentScene().onLoad();
+                Scene.currentScene.onLoad();
             }
-
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
-            if (Scenes.Scene.getCurrentScene() == null) return;
 
-            // Atualiza a cena atual
-            Scenes.Scene.getCurrentScene().Update(args.Time);
-
-            // Atualiza os objetos da cena atual
-            List<GameObject> gameObjects = Scenes.Scene.getCurrentScene().GetGameObjects();
-            foreach(GameObject obj in gameObjects)
+            if(Scenes.Scene.currentScene != null)
             {
-                obj.Update((float)args.Time);
+                Scenes.Scene.currentScene.UpdateObjects();
+                Scenes.Scene.currentScene.Update();
             }
-        }   
-
+        }
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
-            frameCount++;
-            
+
             _imGUIcontroller.Update(this, (float)args.Time);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); // Limpa o buffer de cores e profundidade
+            // Limpa o buffer de cores e profundidade
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            // Se não exister cena nenhuma, não renderize nada
-            if (Scenes.Scene.getCurrentScene() == null){base.SwapBuffers();return;};
-
-            // Renderiza os voxels da cena atual
-            List<Components.Voxel> voxels = Scenes.Scene.getCurrentScene().GetVoxels();
-            foreach(Components.Voxel obj in voxels)
+            if (Camera.currentCamera != null)
             {
-                obj.Render(args.Time);
+                // Atualiza a matriz de projeção, com a projeção da camera atual
+                shader.SetMatrix4("projection", Camera.currentCamera.GetProjectionMatrix());
+
+                // Atualiza a matriz de view, com a projeção da camera atual
+                shader.SetMatrix4("view", Camera.currentCamera.GetViewMatrix());
             }
-
-            // TO DO : Renderização de GameObjects
-
-            // Atualiza a matriz de projeção com a projeção da camera
-            if(currentCamera != null) 
+            if (Scenes.Scene.currentScene != null)
             {
-                projectionMatrix = currentCamera.GetProjectionMatrix();
-                shader.SetMatrix4("projection", projectionMatrix);
-
-
-                viewMatrix = currentCamera.GetViewMatrix();
-                shader.SetMatrix4("view", viewMatrix);
+                Scenes.Scene.currentScene.onRender();
+                Scenes.Scene.currentScene.Render();
             }
-
-            Scenes.Scene.getCurrentScene().Render(args.Time);
-
             _imGUIcontroller.Render();
 
-            // Troca o buffer do front-end pelo back-end
+            // Troca o buff do front-end pelo do back-end 
             base.SwapBuffers();
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-
-            //Console.WriteLine(Size.X + " / " + )
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            if(currentCamera != null)
-            {
-                projectionMatrix = currentCamera.GetProjectionMatrix();
-
-            }
+            //GL.LoadIdentity();
 
             _imGUIcontroller.WindowResized(ClientSize.X, ClientSize.Y);
-        }
-        
-        public override void Run()
-        {
-  
-            base.Run();
-        }
-
-        public override void Close()
-        {
-            base.Close();
         }
 
         protected override void OnTextInput(TextInputEventArgs e)

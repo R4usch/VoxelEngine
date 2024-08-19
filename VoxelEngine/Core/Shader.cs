@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK.Compute.OpenCL;
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Mathematics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VoxelEngine.Core
 {
@@ -20,13 +12,13 @@ namespace VoxelEngine.Core
 
         Dictionary<string, int> _uniformLocations;
 
-        internal Shader(ShaderSettings settings)
+        internal Shader(string vertexPath, string fragmentPath)
         {
             VertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(VertexShader, settings.vertex);
+            GL.ShaderSource(VertexShader, vertexPath);
 
             FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(FragmentShader, settings.fragment);
+            GL.ShaderSource(FragmentShader, fragmentPath);
 
             CompileShader();
 
@@ -64,7 +56,15 @@ namespace VoxelEngine.Core
             GL.AttachShader(Handle, FragmentShader);
 
             // Linka o programa ao OpenGL
-            LinkProgram();
+            GL.LinkProgram(Handle);
+
+            // Verifica por errors
+            GL.GetProgram(Handle, GetProgramParameterName.LinkStatus, out int success3);
+            if (success3 == 0)
+            {
+                string infoLog = GL.GetProgramInfoLog(Handle);
+                Console.WriteLine(infoLog);
+            }
 
             // Após linkar o programa, podemos deletar e limpar os shaders
             GL.DetachShader(Handle, VertexShader);
@@ -72,28 +72,24 @@ namespace VoxelEngine.Core
             GL.DeleteShader(VertexShader);
             GL.DeleteShader(FragmentShader);
 
+            // Acessa o shader e pega a quantidade total de todas as variaveis uniformes
             GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
-
             _uniformLocations = new Dictionary<string, int>();
 
-            // Loop over all the uniforms,
+            // Loop por todas as variáveis uniformes
             for (var i = 0; i < numberOfUniforms; i++)
             {
-                // get the name of this uniform,
+                // Retorna o nome da variável uniforme
                 var key = GL.GetActiveUniform(Handle, i, out _, out _);
 
-                // get the location,
+                // Retorna a localização da variável usando o nome
                 var location = GL.GetUniformLocation(Handle, key);
 
-                // and then add it to the dictionary.
+                // Adiciona a variável uniforme ao dicionário
                 _uniformLocations.Add(key, location);
             }
         }
 
-        internal void LinkProgram()
-        {
-            GL.LinkProgram(Handle);
-        }
 
         internal void Use()
         {
@@ -112,22 +108,10 @@ namespace VoxelEngine.Core
 
         internal void SetMatrix4(string name, Matrix4 matrix)
         {
-
             GL.UseProgram(Handle);
 
             if (!_uniformLocations.ContainsKey(name)) return;
             GL.UniformMatrix4(_uniformLocations[name], true, ref matrix);
-        }
-    }
-
-    public class ShaderSettings
-    {
-        public string vertex;
-        public string fragment;
-        public ShaderSettings(string _vertex, string _fragment)
-        {
-            vertex = _vertex;
-            fragment = _fragment;
         }
     }
 }

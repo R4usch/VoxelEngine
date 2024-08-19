@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "dgSpecHash": "Zj7t26Bvtfc=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Rausch\\Documents\\GitHub\\VoxelEngine\\GameTest\\GameTest.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Rausch\\.nuget\\packages\\imgui.net\\1.91.0.1\\imgui.net.1.91.0.1.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk\\4.8.2\\opentk.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.audio.openal\\4.8.2\\opentk.audio.openal.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.compute\\4.8.2\\opentk.compute.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.core\\4.8.2\\opentk.core.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.graphics\\4.8.2\\opentk.graphics.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.input\\4.8.2\\opentk.input.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.mathematics\\4.8.2\\opentk.mathematics.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.redist.glfw\\3.3.8.39\\opentk.redist.glfw.3.3.8.39.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.windowing.common\\4.8.2\\opentk.windowing.common.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.windowing.desktop\\4.8.2\\opentk.windowing.desktop.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.8.2\\opentk.windowing.graphicslibraryframework.4.8.2.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\Rausch\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

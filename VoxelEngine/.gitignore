@@ -1,0 +1,16 @@
+GameTest/obj
+GameTest/obj/
+GameTest/bin
+GameTest/bin/Debug
+GameTest/Debug
+
+VoxelEngine/obj
+VoxelEngine/bin
+VoxelEngine/Debug
+
+.vs/
+.vscode/
+
+.fake
+
+UpgradeLog.htm

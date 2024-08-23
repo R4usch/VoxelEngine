@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using VoxelEngine.Objects.Primordial;
 using VoxelEngine.Scenes;
+using VoxelEngine.Utils.Threading;
 
 
 namespace VoxelEngine.Core
@@ -16,6 +17,8 @@ namespace VoxelEngine.Core
 
         ImGUI.ImGUIController _imGUIcontroller;
 
+
+        
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings
         {
             // Setando o tamanho da tela
@@ -25,7 +28,7 @@ namespace VoxelEngine.Core
         })
         {
             window = this;
-
+            
  
         }
 
@@ -54,14 +57,39 @@ namespace VoxelEngine.Core
             }
         }
 
+
+        int frameCount = 0;
+        double elapsedTime = 0;
+        public static double FPS;
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
+
+            frameCount++;
+
+            elapsedTime += args.Time;
+
+            if(elapsedTime >= 1.0)
+            {
+                FPS = Math.Round(frameCount / elapsedTime);
+
+                frameCount = 0;
+                elapsedTime = 0;
+            }
 
             if(Scenes.Scene.currentScene != null)
             {
                 Scenes.Scene.currentScene.UpdateObjects();
                 Scenes.Scene.currentScene.Update();
+            }
+
+            for(int i = 0; i < QueueAction.actions.Count; i++)
+            {
+                Action action = QueueAction.actions.Dequeue();
+                if (action != null)
+                {
+                    action.Invoke();
+                }
             }
         }
         protected override void OnRenderFrame(FrameEventArgs args)

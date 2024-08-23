@@ -18,5 +18,30 @@ namespace VoxelEngine.Utils.Math
             Y = y;
             Z = z;
         }
+
+        public override string ToString()
+        {
+            return $"{X}, {Y}, {Z}";
+
+        }
+    }
+    public struct Int3
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+
+        public Int3(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public override string ToString()
+        {
+            return $"{X}, {Y}, {Z}";
+
+        }
     }
 }

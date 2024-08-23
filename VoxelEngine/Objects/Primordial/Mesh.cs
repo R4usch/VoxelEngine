@@ -7,6 +7,8 @@ namespace VoxelEngine.Objects.Primordial
     public class Mesh
     {
 
+        public static int TotalTriangles = 0;
+
         public Transform transform = new();
 
         public int indicesCount = 0;
@@ -15,18 +17,16 @@ namespace VoxelEngine.Objects.Primordial
         int VAO;
         int EBO;
 
-        public Mesh(float[] vertices, uint[] indices)
-        {
-            // VBO = Local na memoria onde sera armazenado as vertices
-            // Bind VBO (VERTEX BUFFER OBJECT)
-            VBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            // Copia os dados da vertex para o buffer de memoria
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+        bool changing = false;
+        public bool changed = false;
 
-            // VAO = Local onde é armazenado os ids das vertices
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
+        uint[] indices = null;
+
+        public Mesh(float[] vertices, uint[] _indices)
+        {
+            indices = _indices;
+            
+            CreateVertices(vertices);
 
             // Habilita os atributos de posição vertex na localização 0  // Stride é quantas casas vai ter que se mover para achar o próximo valor da proxima vertex
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
@@ -39,31 +39,63 @@ namespace VoxelEngine.Objects.Primordial
             // Element Buffer Object
             EBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
             //GL.BindVertexArray(0);  // Unbind the VAO
 
-            indicesCount = indices.Length;
+            indicesCount = _indices.Length;
+
+            TotalTriangles += _indices.Length / 3;
 
             Scene.currentScene.meshes.Add(this);
 
         }
 
+        public void CreateVertices(float[] vertices)
+        {
+            changing = true;
+
+            // Vertex Array Object
+            // Se VAO não existir, crie-o
+            if (VAO == 0)
+            {
+                VAO = GL.GenVertexArray();
+            }
+            GL.BindVertexArray(VAO);
+
+            // Vertex Buffer Object
+            // Se VBO não existir, crie-o; caso contrário, substitua os dados no buffer
+            if (VBO == 0)
+            {
+                VBO = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+            }
+            else
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, vertices.Length * sizeof(float), vertices);
+            }
+
+
+            changing = false;
+            changed = true; // Marca que houve uma mudança
+        }
+
         internal Matrix4 GetModelMatrix()
         {
-            Matrix4 model = Matrix4.CreateTranslation(transform.position)
-                            * Matrix4.CreateScale(transform.scale)
+            Matrix4 model = Matrix4.CreateScale(transform.scale)
                             * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(transform.rotation.X))
                             * Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(transform.rotation.Y))
-                            * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(transform.rotation.Z));
+                            * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(transform.rotation.Z))
+                            * Matrix4.CreateTranslation(transform.position);
 
             return model;
         }
 
         internal void Render()
         {
-            //Console.WriteLine("Desenhando");
-            //Console.WriteLine("Renderizando mesh");
+            if (changing) return;
+
             GL.BindVertexArray(VAO);
 
             // Gerar matrix
@@ -79,5 +111,29 @@ namespace VoxelEngine.Objects.Primordial
                 Console.WriteLine($"OpenGL Error: {error}");
             }
         }
+
+        public void Destroy()
+        {
+            if (VAO != 0)
+            {
+                GL.DeleteVertexArray(VAO);
+                VAO = 0;
+            }
+            if (VBO != 0)
+            {
+                GL.DeleteBuffer(VBO);
+                VBO = 0;
+            }
+            if( EBO != 0)
+            {
+                GL.DeleteBuffer(EBO);
+                EBO = 0;
+            }
+            Scene.currentScene.meshes.Remove(this);
+            //GC.SuppressFinalize(this);
+
+            TotalTriangles -= indices.Length / 3;
+        }
+
     }
 }

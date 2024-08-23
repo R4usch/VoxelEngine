@@ -32,10 +32,10 @@ namespace VoxelEngine.Voxels
         };
 
 
-        public static readonly uint[] QUAD_INDICES =
-        {
-            0, 1, 3,   // first triangle
-            1, 2, 3    // second triangle
+
+        public static uint[] QUAD_INDICES = {
+            0, 1, 2,  // Primeiro triângulo
+            2, 3, 0   // Segundo triângulo
         };
 
         // 0.5f,  0.5f, 0f, R, G, B,  // top right     0
@@ -43,6 +43,23 @@ namespace VoxelEngine.Voxels
         //-0.5f, -0.5f, 0f, R, G, B,  // bottom left   2
         //-0.5f,  0.5f, 0f, R, G, B,  // top left      3  
 
+        public static float[] AppendQuad(Float3 topLeft, Float3 topRight, Float3 bottomLeft, Float3 bottomRight)
+        {
+            float R = 1f;
+            float G = 1f;
+            float B = 1f;
+
+            float[] retorno = {
+                // Vertices in counter-clockwise order
+                // X, Y, Z, R, G, B
+                topLeft.X,     topLeft.Y,     topLeft.Z,     R, G, B,  // top left
+                bottomLeft.X,  bottomLeft.Y,  bottomLeft.Z,  R, G, B,  // bottom left
+                bottomRight.X, bottomRight.Y, bottomRight.Z, R, G, B,  // bottom right
+                topRight.X,    topRight.Y,    topRight.Z,    R, G, B   // top right
+            };
+
+            return retorno;
+        }
         public static float[] CreateQuadOnPosition(Float3 topRight, Float3 bottomRight, Float3 bottomLeft, Float3 topLeft)
         {
             float R = 1f;
